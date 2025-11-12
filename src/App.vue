@@ -61,7 +61,7 @@
 import { RouterView } from 'vue-router'
 import './styles/page-common.css'
 import { useRouter, useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { House, ShoppingBag, Setting } from '@element-plus/icons-vue'
 
@@ -78,6 +78,23 @@ export default {
     const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
     const isAdmin = ref(localStorage.getItem('isAdmin') === 'true')
     const activeMenu = ref(route.name || 'home')
+    
+    // 更新用户信息函数
+    const updateUserInfo = () => {
+      const newUserInfo = localStorage.getItem('userInfo')
+      userInfo.value = newUserInfo ? JSON.parse(newUserInfo) : null
+      isAdmin.value = localStorage.getItem('isAdmin') === 'true'
+    }
+    
+    // 监听路由变化，当从登录页跳转回来时更新用户信息
+    watch(
+      () => route.path,
+      (newPath) => {
+        if (newPath === '/') {
+          updateUserInfo()
+        }
+      }
+    )
     
     // 处理菜单选择
     const handleMenuSelect = (index) => {
@@ -117,6 +134,21 @@ export default {
 }
 </script>
 
+<style>
+/* 全局样式重置，确保页面占满整个浏览器窗口 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+</style>
+
 <style scoped>
 .app-container {
   width: 100%;
@@ -132,6 +164,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  height: 60px;
 }
 
 .app-title {
@@ -164,6 +197,7 @@ export default {
   background-color: #303133;
   color: white;
   border-right: none;
+  height: 100%;
 }
 
 .sidebar-menu .el-menu-item {
