@@ -159,7 +159,17 @@ export const getFoodList = async (params = {}) => {
     }
   }
 }
-
+export const  getCategories = async () => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/foods/categories')
+    return response
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟食品分类数据')
+    return mockCategories
+  }
+}
 // 获取食品详情
 export const getFoodDetail = async (id) => {
   try {
@@ -209,7 +219,7 @@ export const createFood = async (foodData) => {
 }
 
 // 更新食品
-export const updateFood = async (id, foodData) => {
+export const updateFoodStatus = async (id, foodData) => {
   try {
     // 尝试发送实际请求
     const response = await api.put(`/foods/${id}`, foodData)
@@ -261,19 +271,6 @@ export const deleteFood = async (id) => {
         }
       }
     }
-  }
-}
-
-// 获取食品分类
-export const getFoodCategories = async () => {
-  try {
-    // 尝试发送实际请求
-    const response = await api.get('/foods/categories')
-    return response
-  } catch (error) {
-    // 后端服务不可用时，使用模拟数据
-    console.log('后端服务不可用，使用模拟食品分类数据')
-    return mockCategories
   }
 }
 
