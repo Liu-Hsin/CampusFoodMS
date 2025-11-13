@@ -72,7 +72,7 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import { getFoodDetail } from '../services/foodService'
+import { getFoodDetail, mockFoods } from '../services/foodService'
 import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -95,90 +95,7 @@ export default {
           // 如果详情接口失败，尝试从列表中查找或使用mock数据
           console.log('详情接口失败，尝试使用替代数据')
           
-          // 模拟数据
-          const mockFoods = [
-            {
-              id: '1',
-              name: '宫保鸡丁',
-              description: '经典川菜，麻辣鲜香，选用优质鸡肉与花生、干辣椒等配料精心烹制而成。鸡肉嫩滑，花生酥脆，麻辣适中，是下饭的绝佳选择。',
-              price: 28.00,
-              originalPrice: 32.00,
-              image: 'https://picsum.photos/id/1/600/400',
-              category: '川菜',
-              status: 'available',
-              sales: 1200,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z',
-              detailDescription: '宫保鸡丁是一道闻名中外的汉族传统名菜，属于川菜系。这道菜由清朝山东巡抚、四川总督丁宝桢所创，他对烹饪颇有研究，喜欢吃鸡和花生米，并尤其喜好辣味。这道菜也被归纳为北京宫廷菜。后来他被调任四川总督，在四川时，他改良了这道菜的做法，加入了四川特有的辣椒，这道菜也最终发展成为了川菜的代表菜品之一。'
-            },
-            {
-              id: '2',
-              name: '麻婆豆腐',
-              description: '麻辣嫩滑，下饭神器，豆腐软嫩，肉末鲜香，麻辣味十足。',
-              price: 18.00,
-              originalPrice: 22.00,
-              image: 'https://picsum.photos/id/2/600/400',
-              category: '川菜',
-              status: 'available',
-              sales: 1500,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z',
-              detailDescription: '麻婆豆腐是四川省传统名菜之一，属于川菜系。主要原料为配料和豆腐，材料主要有豆腐、牛肉末（也可以用猪肉）、辣椒和花椒等。麻来自花椒，辣来自辣椒，这道菜突出了川菜麻辣的特点。其口味独特，口感顺滑。'
-            },
-            {
-              id: '3',
-              name: '糖醋排骨',
-              description: '酸甜可口，色泽红亮，排骨肉质鲜嫩，酸甜开胃。',
-              price: 38.00,
-              originalPrice: 42.00,
-              image: 'https://picsum.photos/id/3/600/400',
-              category: '粤菜',
-              status: 'available',
-              sales: 980,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z'
-            },
-            {
-              id: '4',
-              name: '清蒸鱼',
-              description: '鲜嫩多汁，原汁原味，保留了鱼肉的鲜美和营养。',
-              price: 68.00,
-              originalPrice: 78.00,
-              image: 'https://picsum.photos/id/4/600/400',
-              category: '粤菜',
-              status: 'available',
-              sales: 850,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z'
-            },
-            {
-              id: '5',
-              name: '北京烤鸭',
-              description: '外酥里嫩，北京特产，皮脆肉嫩，配以薄饼和酱料风味独特。',
-              price: 128.00,
-              originalPrice: 158.00,
-              image: 'https://picsum.photos/id/5/600/400',
-              category: '北京菜',
-              status: 'available',
-              sales: 1800,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z'
-            },
-            {
-              id: '6',
-              name: '扬州炒饭',
-              description: '配料丰富，香气四溢，米饭粒粒分明，色泽金黄。',
-              price: 22.00,
-              originalPrice: 26.00,
-              image: 'https://picsum.photos/id/6/600/400',
-              category: '江苏菜',
-              status: 'available',
-              sales: 2100,
-              createdAt: '2023-01-10T00:00:00Z',
-              updatedAt: '2023-12-05T00:00:00Z'
-            }
-          ]
-          
+          // 从mock数据中查找
           response = mockFoods.find(item => item.id === foodId.value) || null
         }
         

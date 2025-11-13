@@ -126,7 +126,7 @@ export const mockAdminCategories = [
 export const getFoodList = async (params = {}) => {
   try {
     // 尝试发送实际请求
-    const response = await api.get('/foods', { params })
+    const response = await api.post('/foods', { params })
     return response
   } catch (error) {
     // 后端服务不可用时，使用模拟数据

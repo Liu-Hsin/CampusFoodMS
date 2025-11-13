@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container admin-page">
     <h1 class="dashboard-title">美食管理仪表盘</h1>
     
     <!-- 统计卡片区域 -->
@@ -217,7 +217,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-/* 所有样式已移至 page-common.css */
-</style>

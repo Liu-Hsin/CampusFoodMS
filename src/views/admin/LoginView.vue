@@ -1,138 +1,115 @@
 <template>
-  <div class="login-container">
-    <div class="login-form-wrapper">
-      <div class="login-header">
-        <h2 class="login-title">管理员登录</h2>
-        <p class="login-subtitle">校园美食管理系统</p>
-      </div>
-      
+  <div class="login-container admin-login">
+    <div class="login-box">
+      <h2 class="login-title">管理员登录</h2>
       <el-form
-        :model="loginForm"
-        :rules="rules"
         ref="loginFormRef"
-        class="login-form"
+        :model="loginForm"
+        :rules="loginRules"
         label-position="top"
       >
         <el-form-item label="用户名" prop="username">
           <el-input
             v-model="loginForm.username"
             placeholder="请输入管理员用户名"
-            prefix-icon="el-icon-user"
             clearable
+            prefix-icon="Avatar"
           />
         </el-form-item>
-        
         <el-form-item label="密码" prop="password">
           <el-input
             v-model="loginForm.password"
             type="password"
             placeholder="请输入管理员密码"
-            prefix-icon="el-icon-lock"
             show-password
+            prefix-icon="Lock"
           />
         </el-form-item>
-        
         <el-form-item>
           <el-button
             type="primary"
+            class="login-btn"
             @click="handleLogin"
-            :loading="isLoading"
-            class="login-button"
-            size="large"
+            :loading="loginLoading"
           >
             登录
           </el-button>
         </el-form-item>
-        
-        <div class="login-footer">
-          <el-link type="info" @click="goToHome">返回首页</el-link>
-        </div>
       </el-form>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { adminLogin } from '@/services/adminService'
+import { adminLogin } from '../../services/adminService'
 
 export default {
-  name: 'LoginView',
+  name: 'AdminLoginView',
   setup() {
     const router = useRouter()
     const loginFormRef = ref(null)
-    const isLoading = ref(false)
+    const loginLoading = ref(false)
     
-    const loginForm = ref({
+    const loginForm = reactive({
       username: '',
       password: ''
     })
     
-    const rules = {
+    const loginRules = {
       username: [
-        { required: true, message: '请输入用户名', trigger: 'blur' },
-        { min: 3, max: 20, message: '用户名长度应为3-20个字符', trigger: 'blur' }
+        { required: true, message: '请输入管理员用户名', trigger: 'blur' },
+        { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符之间', trigger: 'blur' }
       ],
       password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 6, message: '密码长度至少为6个字符', trigger: 'blur' }
+        { required: true, message: '请输入管理员密码', trigger: 'blur' },
+        { min: 6, max: 20, message: '密码长度在 6 到 20 个字符之间', trigger: 'blur' }
       ]
     }
     
-    // 登录方法现在使用服务层的adminLogin函数
-    
     const handleLogin = async () => {
-      // 表单验证
-      if (!loginFormRef.value) return
-      
       try {
+        // 表单验证
         await loginFormRef.value.validate()
-        isLoading.value = true
         
-        // 调用服务层的登录方法
-        const result = await adminLogin({
-          username: loginForm.value.username,
-          password: loginForm.value.password
-        })
+        // 设置加载状态
+        loginLoading.value = true
         
-        if (result.success) {
-          // 存储登录信息
-          localStorage.setItem('token', result.data.token)
-          localStorage.setItem('userInfo', JSON.stringify(result.data.userInfo))
-          localStorage.setItem('isAdmin', 'true')
-          
-          ElMessage.success('登录成功！')
-          router.push('/admin/dashboard')
-        } else {
-          ElMessage.error(result.message || '用户名或密码错误，请确认您是管理员')
-        }
+        // 调用登录接口
+        const response = await adminLogin(loginForm.username, loginForm.password)
         
-        isLoading.value = false
+        // 存储管理员信息和token
+        localStorage.setItem('adminInfo', JSON.stringify(response.adminInfo))
+        localStorage.setItem('token', response.token)
+        localStorage.setItem('isAdmin', 'true')
+        
+        // 显示成功消息
+        ElMessage.success('管理员登录成功')
+        
+        // 跳转到管理仪表盘
+        router.push('/admin/dashboard')
       } catch (error) {
-        console.error('登录失败:', error)
-        ElMessage.error('登录失败，请稍后再试')
-        isLoading.value = false
+        console.error('管理员登录失败:', error)
+        
+        // 如果是表单验证失败，不显示错误消息
+        if (error?.message !== 'Cancel') {
+          ElMessage.error(error?.message || '管理员登录失败，请检查用户名和密码')
+        }
+      } finally {
+        // 重置加载状态
+        loginLoading.value = false
       }
     }
     
-    const goToHome = () => {
-      router.push('/')
-    }
-    
     return {
-      loginForm,
       loginFormRef,
-      rules,
-      isLoading,
-      handleLogin,
-      goToHome
+      loginForm,
+      loginRules,
+      loginLoading,
+      handleLogin
     }
   }
 }
 </script>
-
-<style scoped>
-/* 所有样式已移至 page-common.css */
-</style>
