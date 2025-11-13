@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">订单管理</h2>
+    <!-- <h2 class="page-title">订单管理</h2> -->
     
     <div class="search-filter">
       <el-input v-model="orderId" placeholder="订单ID" clearable style="width: 200px; margin-right: 10px"></el-input>
@@ -16,23 +16,23 @@
     
     <div class="table-container">
       <el-table :data="orders" stripe style="width: 100%">
-      <el-table-column prop="id" label="订单ID" width="150"></el-table-column>
-      <el-table-column prop="userName" label="用户名" width="120"></el-table-column>
-      <el-table-column prop="totalAmount" label="总金额" width="100"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="getStatusTagType(scope.row.status)">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" width="180"></el-table-column>
-      <el-table-column prop="completedAt" label="完成时间" width="180"></el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
-          <el-button v-if="scope.row.status === 'pending'" type="success" size="small" @click="handleCompleteOrder(scope.row.id)">完成</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column prop="id" label="订单ID" width="150"></el-table-column>
+        <el-table-column prop="userName" label="用户名" width="120"></el-table-column>
+        <el-table-column prop="totalAmount" label="总金额" width="100"></el-table-column>
+        <el-table-column prop="status" label="状态" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatusTagType(scope.row.status)">{{ scope.row.status }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="180"></el-table-column>
+        <el-table-column prop="completedAt" label="完成时间" width="180"></el-table-column>
+        <el-table-column label="操作" width="150" fixed="right">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
+            <el-button v-if="scope.row.status === 'pending'" type="success" size="small" @click="handleCompleteOrder(scope.row.id)">完成</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     
     <div class="pagination">

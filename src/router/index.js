@@ -14,15 +14,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/food-list',
-      name: 'foodList',
-      component: FoodListView,
-      meta: {
-        requiresAuth: true
+        requiresAuth: false // 首页无需登录
       }
     },
     {
@@ -30,30 +22,52 @@ const router = createRouter({
       name: 'foodDetail',
       component: FoodDetailView,
       meta: {
-        requiresAuth: true
+        requiresAuth: false // 美食详情无需登录
       }
     },
+    // 管理页面路由组
     {
-      path: '/order-management',
-      name: 'orderManagement',
-      component: OrderManagementView,
+      path: '/admin',
+      name: 'admin',
+      redirect: '/admin/dashboard',
       meta: {
         requiresAuth: true,
         requiresAdmin: true
-      }
+      },
+      children: [
+        {
+          path: 'dashboard',
+          name: 'adminDashboard',
+          component: FoodListView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'order-management',
+          name: 'orderManagement',
+          component: OrderManagementView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'user-management',
+          name: 'userManagement',
+          component: UserManagementView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        }
+      ]
     },
+    // 管理登录页面
     {
-      path: '/user-management',
-      name: 'userManagement',
-      component: UserManagementView,
-      meta: {
-        requiresAuth: true,
-        requiresAdmin: true
-      }
-    },
-    {
-      path: '/login',
-      name: 'login',
+      path: '/admin/login',
+      name: 'adminLogin',
       component: LoginView
     }
   ]
@@ -64,10 +78,16 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('token') !== null
   const isAdmin = localStorage.getItem('isAdmin') === 'true'
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else if (to.meta.requiresAdmin && !isAdmin) {
-    next('/')
+  // 如果是访问管理页面，需要管理员权限
+  if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
+    if (!isAuthenticated) {
+      next('/admin/login')
+    } else if (!isAdmin) {
+      // 不是管理员但已登录，重定向到首页
+      next('/')
+    } else {
+      next()
+    }
   } else {
     next()
   }

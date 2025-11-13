@@ -1,7 +1,7 @@
 import api from './api'
 
-// 模拟食品数据
-const mockFoods = [
+// 模拟食品数据（前端展示用）
+export const mockFoods = [
   {
     id: '1',
     name: '宫保鸡丁',
@@ -82,8 +82,45 @@ const mockFoods = [
   }
 ]
 
+// 管理页面模拟食品数据
+export const mockAdminFoods = [
+  { id: 1, name: '香辣牛肉汉堡', category: '快餐', price: 18.5, image: '', status: '上架', createdAt: '2023-10-01 10:30:00' },
+  { id: 2, name: '台式卤肉饭', category: '主食', price: 15.0, image: '', status: '上架', createdAt: '2023-10-02 14:20:00' },
+  { id: 3, name: '宫保鸡丁', category: '炒菜', price: 22.0, image: '', status: '上架', createdAt: '2023-10-03 09:15:00' },
+  { id: 4, name: '珍珠奶茶', category: '饮品', price: 12.0, image: '', status: '下架', createdAt: '2023-10-04 16:45:00' },
+  { id: 5, name: '黑椒牛排意面', category: '西餐', price: 28.0, image: '', status: '上架', createdAt: '2023-10-05 11:00:00' },
+  { id: 6, name: '糖醋排骨', category: '炒菜', price: 25.0, image: '', status: '上架', createdAt: '2023-10-06 13:30:00' }
+]
+
+// Dashboard页面最近添加的美食模拟数据
+export const mockRecentFoods = [
+  { id: 1, name: '香辣牛肉汉堡', category: '快餐', price: 18.5, status: '上架' },
+  { id: 2, name: '台式卤肉饭', category: '主食', price: 15.0, status: '上架' },
+  { id: 3, name: '宫保鸡丁', category: '炒菜', price: 22.0, status: '上架' },
+  { id: 4, name: '珍珠奶茶', category: '饮品', price: 12.0, status: '下架' },
+  { id: 5, name: '黑椒牛排意面', category: '西餐', price: 28.0, status: '上架' }
+]
+
+// Dashboard页面统计数据
+export const mockDashboardStats = {
+  totalFoods: 6,
+  totalOrders: 25,
+  totalUsers: 120
+}
+
 // 模拟食品分类
-const mockCategories = ['川菜', '粤菜', '北京菜', '江苏菜', '浙江菜', '湘菜', '福建菜', '徽菜']
+export const mockCategories = ['川菜', '粤菜', '北京菜', '江苏菜', '浙江菜', '湘菜', '福建菜', '徽菜']
+
+// 管理页面模拟食品分类
+export const mockAdminCategories = [
+  { label: '快餐', value: '快餐' },
+  { label: '主食', value: '主食' },
+  { label: '炒菜', value: '炒菜' },
+  { label: '饮品', value: '饮品' },
+  { label: '西餐', value: '西餐' },
+  { label: '甜点', value: '甜点' },
+  { label: '其他', value: '其他' }
+]
 
 // 获取食品列表
 export const getFoodList = async (params = {}) => {
@@ -237,6 +274,75 @@ export const getFoodCategories = async () => {
     // 后端服务不可用时，使用模拟数据
     console.log('后端服务不可用，使用模拟食品分类数据')
     return mockCategories
+  }
+}
+
+// 获取管理页面食品分类
+export const getAdminFoodCategories = async () => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/foods/categories')
+    return response.map(cat => ({ label: cat, value: cat }))
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟管理页面食品分类数据')
+    return mockAdminCategories
+  }
+}
+
+// 获取管理页面食品列表
+export const getAdminFoodList = async (params = {}) => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/admin/foods', { params })
+    return response
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟管理页面食品列表数据')
+    
+    let foods = mockAdminFoods.map(food => ({
+      ...food,
+      id: food.id || Math.floor(Math.random() * 1000),
+      status: food.status || '上架',
+      createdAt: food.createdAt || new Date().toLocaleString()
+    }))
+    
+    return {
+      list: foods,
+      total: foods.length
+    }
+  }
+}
+
+// 获取Dashboard统计数据
+export const getDashboardStats = async () => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/admin/dashboard/stats')
+    return response
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟Dashboard统计数据')
+    
+    // 生成一些随机数据增加真实感
+    return {
+      totalFoods: mockDashboardStats.totalFoods,
+      totalOrders: Math.floor(Math.random() * 50) + 10,
+      totalUsers: Math.floor(Math.random() * 200) + 50
+    }
+  }
+}
+
+// 获取最近添加的美食
+export const getRecentFoods = async (limit = 5) => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/admin/foods/recent', { params: { limit } })
+    return response
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟最近添加的美食数据')
+    return mockRecentFoods.slice(0, limit)
   }
 }
 

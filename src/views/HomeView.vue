@@ -1,126 +1,306 @@
 <template>
-  <div class="page-container">
-    <h2 class="page-title">欢迎使用校园美食管理系统</h2>
-    
-    <div class="stats-card">
-      <div class="stat-item">
-        <el-card shadow="hover">
-          <div class="stat-content">
-            <div class="stat-number">{{ foodCount }}</div>
-            <div class="stat-label">美食总数</div>
+  <div class="page-container home-container">
+    <header class="home-header">
+      <h1 class="home-title">校园美食系统</h1>
+      <nav class="category-nav">
+        <el-radio-group v-model="selectedCategory" size="medium" @change="filterFoods">
+          <el-radio-button label="" class="category-item">全部</el-radio-button>
+          <el-radio-button v-for="category in categories" :key="category" :label="category" class="category-item">
+            {{ category }}
+          </el-radio-button>
+        </el-radio-group>
+      </nav>
+    </header>
+
+    <main class="food-card-container">
+      <el-card
+        v-for="food in filteredFoods"
+        :key="food.id"
+        class="food-card"
+        hoverable
+        @click="goToDetail(food.id)"
+      >
+        <template #header>
+          <div class="food-card-header">
+            <el-tag :type="food.status === 'available' ? 'success' : 'danger'" size="small">
+              {{ food.status === 'available' ? '在售' : '下架' }}
+            </el-tag>
           </div>
-        </el-card>
-      </div>
-      
-      <div class="stat-item">
-        <el-card shadow="hover">
-          <div class="stat-content">
-            <div class="stat-number">{{ orderCount }}</div>
-            <div class="stat-label">今日订单</div>
+        </template>
+        
+        <div class="food-image-wrapper">
+          <img :src="food.image" :alt="food.name" class="food-image" />
+        </div>
+        
+        <div class="food-info">
+          <h3 class="food-name">{{ food.name }}</h3>
+          <p class="food-description">{{ food.description }}</p>
+          
+          <div class="food-footer">
+            <div class="food-price">
+              <span class="current-price">¥{{ food.price.toFixed(2) }}</span>
+              <span v-if="food.originalPrice > food.price" class="original-price">¥{{ food.originalPrice.toFixed(2) }}</span>
+            </div>
+            <div class="food-sales">销量: {{ food.sales }}</div>
           </div>
-        </el-card>
-      </div>
-      
-      <div class="stat-item">
-        <el-card shadow="hover">
-          <div class="stat-content">
-            <div class="stat-number">{{ userCount }}</div>
-            <div class="stat-label">用户总数</div>
+          
+          <div class="food-category">
+            <el-tag size="small">{{ food.category }}</el-tag>
           </div>
-        </el-card>
+        </div>
+      </el-card>
+    </main>
+
+    <footer class="home-footer">
+      <div class="admin-entry">
+        <el-button type="primary" @click="goToAdminLogin">管理入口</el-button>
       </div>
-    </div>
-    
-    <div class="table-container">
-      <h3 style="padding: 16px 16px 0; margin-bottom: 16px;">最近订单</h3>
-      <el-table :data="recentOrders" stripe style="width: 100%">
-        <el-table-column prop="id" label="订单ID" width="100"></el-table-column>
-        <el-table-column prop="userName" label="用户名" width="120"></el-table-column>
-        <el-table-column prop="totalAmount" label="总金额" width="100"></el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="scope">
-            <el-tag :type="getStatusTagType(scope.row.status)">{{ scope.row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间"></el-table-column>
-      </el-table>
-    </div>
+    </footer>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { getFoodList } from '../services/foodService'
-import { getOrderList } from '../services/orderService'
-import { getUserList } from '../services/userService'
-import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'HomeView',
   setup() {
-    const foodCount = ref(0)
-    const orderCount = ref(0)
-    const userCount = ref(0)
-    const recentOrders = ref([])
+    const router = useRouter()
+    const foods = ref([])
+    const categories = ref([])
+    const selectedCategory = ref('')
     
-    // 获取统计数据
-    const fetchStats = async () => {
+    // 获取美食数据
+    const fetchFoods = async () => {
       try {
-        // 获取食品总数
-        const foodResponse = await getFoodList()
-        foodCount.value = foodResponse.total || 0
+        // 直接调用getFoodList方法，该方法已包含后端服务不可用时返回mock数据的逻辑
+        const response = await getFoodList()
         
-        // 获取今日订单数
-        const today = new Date()
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString()
-        const orderResponse = await getOrderList({ createdAt: startOfDay })
-        orderCount.value = orderResponse.total || 0
+        // 确保数据正确处理，处理mock数据和真实数据的兼容性
+        // 确保foodItems始终是一个数组
+        let foodItems = []
+        if (Array.isArray(response)) {
+          foodItems = response
+        } else if (response && Array.isArray(response.items)) {
+          foodItems = response.items
+        } else if (response && Array.isArray(response.list)) {
+          foodItems = response.list
+        }
         
-        // 获取最近订单
-        recentOrders.value = orderResponse.items || []
+        foods.value = foodItems
         
-        // 获取用户总数
-        const userResponse = await getUserList()
-        userCount.value = userResponse.total || 0
+        // 提取所有不重复的分类（仅当foodItems是数组且不为空时）
+        if (Array.isArray(foodItems) && foodItems.length > 0) {
+          const uniqueCategories = [...new Set(foodItems.map(food => food.category))]
+          categories.value = uniqueCategories.sort()
+        } else {
+          categories.value = []
+        }
       } catch (error) {
-        ElMessage.error('获取统计数据失败')
+        console.error('获取美食数据失败:', error)
+        // 当foodService中的mock数据也无法获取时，显示空状态
+        foods.value = []
+        categories.value = []
       }
     }
     
-    // 获取订单状态对应的标签类型
-    const getStatusTagType = (status) => {
-      switch (status) {
-        case '待处理':
-          return 'warning'
-        case '已完成':
-          return 'success'
-        case '已取消':
-          return 'danger'
-        default:
-          return 'info'
+    // 根据选中的分类筛选美食
+    const filteredFoods = computed(() => {
+      if (!selectedCategory.value) {
+        return foods.value
       }
+      return foods.value.filter(food => food.category === selectedCategory.value)
+    })
+    
+    // 跳转到美食详情页面
+    const goToDetail = (foodId) => {
+      router.push(`/food/${foodId}`)
+    }
+    
+    // 跳转到管理登录页面
+    const goToAdminLogin = () => {
+      router.push('/admin/login')
+    }
+    
+    // 筛选美食
+    const filterFoods = () => {
+      // 分类变更时的处理逻辑（可选）
     }
     
     onMounted(() => {
-      fetchStats()
+      fetchFoods()
     })
     
     return {
-      foodCount,
-      orderCount,
-      userCount,
-      recentOrders,
-      getStatusTagType
+      foods,
+      categories,
+      selectedCategory,
+      filteredFoods,
+      goToDetail,
+      goToAdminLogin,
+      filterFoods
     }
   }
 }
 </script>
 
 <style scoped>
-/* 页面特定样式已移至全局样式文件 */
+.home-container {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  overflow-y: auto;
+}
 
-/* 首页特定样式 */
-.recent-orders-title {
-  margin-left: 16px;
+.home-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.home-title {
+  font-size: 36px;
+  color: #303133;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.category-nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-item {
+  margin: 0 5px;
+}
+
+.food-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.food-card {
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.food-card-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.food-image-wrapper {
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.food-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.food-card:hover .food-image {
+  transform: scale(1.05);
+}
+
+.food-info {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 200px);
+}
+
+.food-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.food-description {
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.food-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: auto;
+}
+
+.current-price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #f56c6c;
+}
+
+.original-price {
+  font-size: 16px;
+  color: #909399;
+  text-decoration: line-through;
+  margin-left: 5px;
+}
+
+.food-sales {
+  font-size: 14px;
+  color: #909399;
+}
+
+.food-category {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+
+.home-footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid #ebeef5;
+}
+
+.admin-entry {
+  display: inline-block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 10px;
+  }
+  
+  .home-title {
+    font-size: 28px;
+  }
+  
+  .food-card-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .food-image-wrapper {
+    height: 180px;
+  }
 }
 </style>

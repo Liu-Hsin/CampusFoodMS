@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">用户管理</h2>
+    <!-- <h2 class="page-title">用户管理</h2> -->
     
     <div class="search-filter">
       <el-input v-model="username" placeholder="用户名" clearable style="width: 200px; margin-right: 10px"></el-input>
@@ -15,25 +15,25 @@
     
     <div class="table-container">
       <el-table :data="users" stripe style="width: 100%">
-      <el-table-column prop="id" label="用户ID" width="80"></el-table-column>
-      <el-table-column prop="username" label="用户名" width="150"></el-table-column>
-      <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
-      <el-table-column prop="role" label="角色" width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.role === 'admin' ? 'danger' : 'success'">
-            {{ scope.row.role === 'admin' ? '管理员' : '普通用户' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" label="注册时间" width="180"></el-table-column>
-      <el-table-column prop="lastLogin" label="最后登录" width="180"></el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
-          <el-button type="warning" size="small" @click="handleToggleRole(scope.row)">切换角色</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column prop="id" label="用户ID" width="80"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="150"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
+        <el-table-column prop="role" label="角色" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.role === 'admin' ? 'danger' : 'success'">
+              {{ scope.row.role === 'admin' ? '管理员' : '普通用户' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="注册时间" width="180"></el-table-column>
+        <el-table-column prop="lastLogin" label="最后登录" width="180"></el-table-column>
+        <el-table-column label="操作" width="150" fixed="right">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
+            <el-button type="warning" size="small" @click="handleToggleRole(scope.row)">切换角色</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     
     <div class="pagination">

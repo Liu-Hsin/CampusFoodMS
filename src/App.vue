@@ -1,10 +1,7 @@
-<script setup>
-</script>
-
 <template>
   <div class="app-container">
-    <!-- 条件渲染：只有登录后才显示顶部导航栏和侧边栏 -->
-    <div v-if="userInfo">
+    <!-- 管理员页面布局 -->
+    <div v-if="isAdminPage">
       <!-- 顶部导航栏 -->
       <el-header class="app-header">
         <div class="header-left">
@@ -20,19 +17,13 @@
         <!-- 侧边栏 -->
         <el-aside class="app-sidebar" width="200px">
           <el-menu :default-active="activeMenu" class="sidebar-menu" @select="handleMenuSelect" router>
-            <el-menu-item index="home">
+            <el-menu-item index="adminDashboard">
               <template #title>
                 <el-icon><House /></el-icon>
-                <span>首页</span>
+                <span>美食管理</span>
               </template>
             </el-menu-item>
-            <el-menu-item index="foodList">
-              <template #title>
-                <el-icon><ShoppingBag /></el-icon>
-                <span>美食列表</span>
-              </template>
-            </el-menu-item>
-            <el-sub-menu index="management" v-if="isAdmin">
+            <el-sub-menu index="management">
               <template #title>
                 <el-icon><Setting /></el-icon>
                 <span>管理中心</span>
@@ -50,7 +41,7 @@
       </div>
     </div>
     
-    <!-- 未登录时直接显示路由内容 -->
+    <!-- 公共前端页面布局 -->
     <div v-else>
       <RouterView />
     </div>
@@ -77,7 +68,10 @@ export default {
     const route = useRoute()
     const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
     const isAdmin = ref(localStorage.getItem('isAdmin') === 'true')
-    const activeMenu = ref(route.name || 'home')
+    const activeMenu = ref(route.name || 'adminDashboard')
+    
+    // 判断当前是否为管理员页面
+    const isAdminPage = ref(route.path.startsWith('/admin') && route.path !== '/admin/login')
     
     // 更新用户信息函数
     const updateUserInfo = () => {
@@ -86,14 +80,25 @@ export default {
       isAdmin.value = localStorage.getItem('isAdmin') === 'true'
     }
     
-    // 监听路由变化，当从登录页跳转回来时更新用户信息
+    // 监听路由变化，更新页面类型和激活的菜单
     watch(
       () => route.path,
       (newPath) => {
-        if (newPath === '/') {
+        const isAdminRoute = newPath.startsWith('/admin') && newPath !== '/admin/login'
+        isAdminPage.value = isAdminRoute
+        
+        if (isAdminRoute) {
+          activeMenu.value = route.name || 'adminDashboard'
           updateUserInfo()
+          
+          // 确保只有管理员能访问管理页面
+          if (!isAdmin.value) {
+            ElMessage.error('您没有权限访问管理页面')
+            router.push('/')
+          }
         }
-      }
+      },
+      { immediate: true }
     )
     
     // 处理菜单选择
@@ -115,7 +120,7 @@ export default {
       userInfo.value = null
       isAdmin.value = false
       ElMessage.success('退出登录成功')
-      router.push('/login')
+      router.push('/admin/login')
     }
     
     // 监听路由变化，更新激活的菜单
@@ -127,6 +132,7 @@ export default {
       userInfo,
       isAdmin,
       activeMenu,
+      isAdminPage,
       handleMenuSelect,
       handleLogout
     }
@@ -135,7 +141,7 @@ export default {
 </script>
 
 <style>
-/* 全局样式重置，确保页面占满整个浏览器窗口 */
+/* 全局样式重置 */
 * {
   margin: 0;
   padding: 0;
@@ -145,7 +151,33 @@ export default {
 html, body, #app {
   width: 100%;
   height: 100vh;
-  overflow: hidden;
+  position: relative;
+}
+
+/* 移除body的默认边距 */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+}
+
+/* 确保没有滚动条溢出 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>
 
@@ -155,6 +187,9 @@ html, body, #app {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .app-header {
@@ -165,6 +200,8 @@ html, body, #app {
   align-items: center;
   padding: 0 20px;
   height: 60px;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .app-title {
@@ -186,11 +223,14 @@ html, body, #app {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .app-sidebar {
   background-color: #303133;
   overflow-y: auto;
+  flex-shrink: 0;
+  width: 200px !important;
 }
 
 .sidebar-menu {
@@ -200,11 +240,23 @@ html, body, #app {
   height: 100%;
 }
 
-.sidebar-menu .el-menu-item {
+.sidebar-menu .el-menu-item,
+.sidebar-menu .el-sub-menu {
   color: #c0c4cc;
 }
 
-.sidebar-menu .el-menu-item.is-active {
+.sidebar-menu .el-sub-menu__title {
+  color: #c0c4cc;
+}
+
+.sidebar-menu .el-sub-menu__title:hover,
+.sidebar-menu .el-menu-item:hover {
+  background-color: #404040;
+  color: white;
+}
+
+.sidebar-menu .el-menu-item.is-active,
+.sidebar-menu .el-sub-menu.is-active > .el-sub-menu__title {
   color: white;
   background-color: #409eff;
 }
@@ -213,6 +265,83 @@ html, body, #app {
   flex: 1;
   background-color: #f5f5f5;
   overflow-y: auto;
-  padding: 20px;
+  padding: 0;
+  position: relative;
+  margin: 0;
+  width: calc(100% - 200px);
+  min-width: 0;
+}
+
+/* 响应式设计 - 以PC端为主，适配移动端 */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 180px !important;
+  }
+  
+  .app-title {
+    font-size: 20px;
+  }
+  
+  .app-main {
+    width: calc(100% - 180px);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 10px;
+  }
+  
+  .app-title {
+    font-size: 18px;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .app-sidebar {
+    width: 100% !important;
+    height: auto;
+    max-height: 200px;
+    border-bottom: 1px solid #404040;
+  }
+  
+  .app-main {
+    width: 100%;
+  }
+  
+  .sidebar-menu {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    height: auto;
+  }
+  
+  .sidebar-menu .el-menu-item,
+  .sidebar-menu .el-sub-menu {
+    min-width: 100px;
+    padding: 0 10px;
+    height: 50px;
+    line-height: 50px;
+  }
+  
+  .app-main {
+    height: calc(100vh - 60px - 50px);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-title {
+    font-size: 16px;
+  }
+  
+  .header-right {
+    gap: 10px;
+  }
 }
 </style>

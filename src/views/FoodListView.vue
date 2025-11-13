@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">美食列表</h2>
+    <!-- <h2 class="page-title">美食列表</h2> -->
     
     <div class="search-filter">
       <el-input v-model="searchKeyword" placeholder="搜索美食" clearable style="width: 300px; margin-right: 10px">
@@ -19,26 +19,26 @@
     
     <div class="table-container">
       <el-table :data="foods" stripe style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80"></el-table-column>
-      <el-table-column prop="name" label="名称" width="180"></el-table-column>
-      <el-table-column prop="categoryName" label="分类" width="120"></el-table-column>
-      <el-table-column prop="price" label="价格" width="100"></el-table-column>
-      <el-table-column prop="description" label="描述"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 'available' ? 'success' : 'danger'">
-            {{ scope.row.status === 'available' ? '在售' : '下架' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
-          <el-button type="success" size="small" @click="handleEditFood(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDeleteFood(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column prop="id" label="ID" width="80"></el-table-column>
+        <el-table-column prop="name" label="名称" width="180"></el-table-column>
+        <el-table-column prop="categoryName" label="分类" width="120"></el-table-column>
+        <el-table-column prop="price" label="价格" width="100"></el-table-column>
+        <el-table-column prop="description" label="描述"></el-table-column>
+        <el-table-column prop="status" label="状态" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 'available' ? 'success' : 'danger'">
+              {{ scope.row.status === 'available' ? '在售' : '下架' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleViewDetail(scope.row.id)">查看</el-button>
+            <el-button type="success" size="small" @click="handleEditFood(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDeleteFood(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     
     </div>
     
