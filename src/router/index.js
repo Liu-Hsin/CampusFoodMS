@@ -4,7 +4,7 @@ import FoodListView from '../views/FoodListView.vue'
 import OrderManagementView from '../views/OrderManagementView.vue'
 import UserManagementView from '../views/UserManagementView.vue'
 import FoodDetailView from '../views/FoodDetailView.vue'
-import LoginView from '../views/LoginView.vue'
+import LoginView from '../views/admin/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,7 +67,7 @@ const router = createRouter({
     // 管理登录页面
     {
       path: '/admin/login',
-      name: 'adminLogin',
+      name: 'LoginView',
       component: LoginView
     }
   ]

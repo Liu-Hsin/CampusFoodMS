@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container home-container">
+  <div class="page-container home-container page-common">
     <header class="home-header">
       <h1 class="home-title">校园美食系统</h1>
       <nav class="category-nav">
@@ -59,69 +59,117 @@ export default {
     const foods = ref([])
     const categories = ref([])
     const selectedCategory = ref('')
+    
+    // 默认的mock数据，确保在无服务端和无外部mock数据时仍能正常显示
+    const defaultMockFoods = [
+      {
+        id: '1',
+        name: '宫保鸡丁',
+        description: '经典川菜，鸡肉与花生的完美搭配',
+        price: 18.00,
+        originalPrice: 22.00,
+        image: '/images/food1.jpg',
+        category: '热菜',
+        status: 'available',
+        sales: 128
+      },
+      {
+        id: '2',
+        name: '鱼香肉丝',
+        description: '酸甜可口，色泽红亮',
+        price: 16.00,
+        originalPrice: 19.00,
+        image: '/images/food2.jpg',
+        category: '热菜',
+        status: 'available',
+        sales: 96
+      },
+      {
+        id: '3',
+        name: '酸辣土豆丝',
+        description: '开胃小菜，爽脆可口',
+        price: 10.00,
+        originalPrice: 12.00,
+        image: '/images/food3.jpg',
+        category: '凉菜',
+        status: 'available',
+        sales: 85
+      }
+    ]
 
     // 获取美食数据
     const fetchFoods = async () => {
+      try {
+        // 尝试从服务获取数据
+        const response = await getFoodList()
 
-      // 尝试从服务获取数据
-      const response = await getFoodList()
-
-      // 确保数据正确处理，处理mock数据和真实数据的兼容性
-      let foodItems = []
-      if (Array.isArray(response)) {
-        foodItems = response
-      } else if (response && Array.isArray(response.items)) {
-        foodItems = response.items
-      } else if (response && Array.isArray(response.list)) {
-        foodItems = response.list
-      }
-
-      // 如果获取到有效的数据，使用获取的数据
-      if (Array.isArray(foodItems) && foodItems.length > 0) {
-        foods.value = foodItems
-      } else if (Array.isArray(mockFoods) && mockFoods.length > 0) {
-        // 尝试使用foodService中的mock数据
-        foods.value = mockFoods
-      } else {
-        // 使用默认mock数据
-        foods.value = defaultMockFoods
-      }
-
-      // 提取唯一分类
-      const uniqueCategories = [...new Set(foods.value.map(food => food.category))]
-      categories.value = uniqueCategories.sort()
-
-
-      // 根据选中的分类筛选美食
-      const filteredFoods = computed(() => {
-        if (!selectedCategory.value) {
-          return foods.value
+        // 确保数据正确处理，处理mock数据和真实数据的兼容性
+        let foodItems = []
+        if (Array.isArray(response)) {
+          foodItems = response
+        } else if (response && Array.isArray(response.items)) {
+          foodItems = response.items
+        } else if (response && Array.isArray(response.list)) {
+          foodItems = response.list
         }
-        return foods.value.filter(food => food.category === selectedCategory.value)
-      })
 
-      // 跳转到美食详情页面
-      const goToDetail = (foodId) => {
-        router.push(`/food/${foodId}`)
+        // 如果获取到有效的数据，使用获取的数据
+        if (Array.isArray(foodItems) && foodItems.length > 0) {
+          foods.value = foodItems
+        } else if (Array.isArray(mockFoods) && mockFoods.length > 0) {
+          // 尝试使用foodService中的mock数据
+          foods.value = mockFoods
+        } else {
+          // 使用默认mock数据
+          foods.value = defaultMockFoods
+        }
+
+        // 提取唯一分类
+        const uniqueCategories = [...new Set(foods.value.map(food => food.category))]
+        categories.value = uniqueCategories.sort()
+      } catch (error) {
+        console.error('获取美食数据失败:', error)
+        // 出错时使用mock数据
+        if (Array.isArray(mockFoods) && mockFoods.length > 0) {
+          foods.value = mockFoods
+        } else {
+          foods.value = defaultMockFoods
+        }
+        // 提取唯一分类
+        const uniqueCategories = [...new Set(foods.value.map(food => food.category))]
+        categories.value = uniqueCategories.sort()
       }
+    }
 
-      // 筛选美食
-      const filterFoods = () => {
-        // 分类变更时的处理逻辑
+    // 根据选中的分类筛选美食
+    const filteredFoods = computed(() => {
+      if (!selectedCategory.value) {
+        return foods.value
       }
+      return foods.value.filter(food => food.category === selectedCategory.value)
+    })
 
-      onMounted(() => {
-        fetchFoods()
-      })
+    // 跳转到美食详情页面
+    const goToDetail = (foodId) => {
+      router.push(`/food/${foodId}`)
+    }
 
-      return {
-        foods,
-        categories,
-        selectedCategory,
-        filteredFoods,
-        goToDetail,
-        filterFoods
-      }
+    // 筛选美食
+    const filterFoods = () => {
+      // 分类变更时的处理逻辑
+    }
+
+    onMounted(() => {
+      fetchFoods()
+    })
+
+    return {
+      foods,
+      categories,
+      selectedCategory,
+      filteredFoods,
+      goToDetail,
+      filterFoods
     }
   }
 }

@@ -37,7 +37,7 @@ export const login = async (credentials) => {
     console.log('后端服务不可用，使用模拟登录数据')
     
     // 检查是否为预设的模拟用户
-    const username = credentials.username.toLowerCase()
+    const username = credentials.username
     const password = credentials.password
     
     if (mockUsers[username] && mockUsers[username].password === password) {

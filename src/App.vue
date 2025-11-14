@@ -8,7 +8,7 @@
           <h1 class="app-title">校园美食管理系统</h1>
         </div>
         <div class="header-right">
-          <span class="user-info">欢迎，{{ userInfo.username }}</span>
+          <span class="user-info">欢迎，{{ userInfo?.username || '管理员' }}</span>
           <el-button type="text" @click="handleLogout">退出登录</el-button>
         </div>
       </el-header>
@@ -66,7 +66,7 @@ export default {
   setup() {
     const router = useRouter()
     const route = useRoute()
-    const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
+    const userInfo = ref(localStorage.getItem('userInfo') ? (localStorage.getItem('userInfo')) : null)
     const isAdmin = ref(localStorage.getItem('isAdmin') === 'true')
     const activeMenu = ref(route.name || 'adminDashboard')
     
@@ -238,15 +238,24 @@ body {
   color: white;
   border-right: none;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-menu .el-menu-item,
 .sidebar-menu .el-sub-menu {
   color: #c0c4cc;
+  height: 60px; /* 固定高度为60px，确保统一 */
+  line-height: 60px; /* 与高度保持一致 */
+  transition: all 0.3s ease; /* 添加过渡效果 */
+  border-radius: 0; /* 确保没有圆角影响 */
 }
 
 .sidebar-menu .el-sub-menu__title {
   color: #c0c4cc;
+  height: 60px; /* 确保子菜单标题高度一致 */
+  line-height: 60px;
+  padding: 0 20px; /* 调整内边距 */
 }
 
 .sidebar-menu .el-sub-menu__title:hover,
@@ -259,6 +268,29 @@ body {
 .sidebar-menu .el-sub-menu.is-active > .el-sub-menu__title {
   color: white;
   background-color: #409eff;
+  height: 60px; /* 确保激活状态高度一致 */
+  line-height: 60px;
+}
+
+/* 修复子菜单的样式问题 */
+.sidebar-menu .el-sub-menu__title i {
+  color: #c0c4cc;
+}
+
+.sidebar-menu .el-sub-menu__title:hover i,
+.sidebar-menu .el-sub-menu.is-active > .el-sub-menu__title i {
+  color: white;
+}
+
+/* 修复点击时的临时状态样式 */
+.sidebar-menu .el-menu-item:focus,
+.sidebar-menu .el-sub-menu__title:focus {
+  background-color: #404040;
+  outline: none; /* 移除默认焦点轮廓 */
+}
+
+.sidebar-menu .el-menu-item:active {
+  background-color: #409eff; /* 点击时立即显示激活背景色 */
 }
 
 .app-main {
