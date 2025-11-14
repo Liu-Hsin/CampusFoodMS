@@ -84,21 +84,21 @@ export const mockFoods = [
 
 // 管理页面模拟食品数据
 export const mockAdminFoods = [
-  { id: 1, name: '香辣牛肉汉堡', category: '快餐', price: 18.5, image: '', status: '上架', createdAt: '2023-10-01 10:30:00' },
-  { id: 2, name: '台式卤肉饭', category: '主食', price: 15.0, image: '', status: '上架', createdAt: '2023-10-02 14:20:00' },
-  { id: 3, name: '宫保鸡丁', category: '炒菜', price: 22.0, image: '', status: '上架', createdAt: '2023-10-03 09:15:00' },
-  { id: 4, name: '珍珠奶茶', category: '饮品', price: 12.0, image: '', status: '下架', createdAt: '2023-10-04 16:45:00' },
-  { id: 5, name: '黑椒牛排意面', category: '西餐', price: 28.0, image: '', status: '上架', createdAt: '2023-10-05 11:00:00' },
-  { id: 6, name: '糖醋排骨', category: '炒菜', price: 25.0, image: '', status: '上架', createdAt: '2023-10-06 13:30:00' }
+  { id: '1', name: '香辣牛肉汉堡', category: '快餐', price: 18.5, image: '', status: 'available', createdAt: '2023-10-01 10:30:00' },
+  { id: '2', name: '台式卤肉饭', category: '主食', price: 15.0, image: '', status: 'available', createdAt: '2023-10-02 14:20:00' },
+  { id: '3', name: '宫保鸡丁', category: '炒菜', price: 22.0, image: '', status: 'available', createdAt: '2023-10-03 09:15:00' },
+  { id: '4', name: '珍珠奶茶', category: '饮品', price: 12.0, image: '', status: 'unavailable', createdAt: '2023-10-04 16:45:00' },
+  { id: '5', name: '黑椒牛排意面', category: '西餐', price: 28.0, image: '', status: 'available', createdAt: '2023-10-05 11:00:00' },
+  { id: '6', name: '糖醋排骨', category: '炒菜', price: 25.0, image: '', status: 'available', createdAt: '2023-10-06 13:30:00' }
 ]
 
 // Dashboard页面最近添加的美食模拟数据
 export const mockRecentFoods = [
-  { id: 1, name: '香辣牛肉汉堡', category: '快餐', price: 18.5, status: '上架' },
-  { id: 2, name: '台式卤肉饭', category: '主食', price: 15.0, status: '上架' },
-  { id: 3, name: '宫保鸡丁', category: '炒菜', price: 22.0, status: '上架' },
-  { id: 4, name: '珍珠奶茶', category: '饮品', price: 12.0, status: '下架' },
-  { id: 5, name: '黑椒牛排意面', category: '西餐', price: 28.0, status: '上架' }
+  { id: '1', name: '香辣牛肉汉堡', category: '快餐', price: 18.5, status: 'available' },
+  { id: '2', name: '台式卤肉饭', category: '主食', price: 15.0, status: 'available' },
+  { id: '3', name: '宫保鸡丁', category: '炒菜', price: 22.0, status: 'available' },
+  { id: '4', name: '珍珠奶茶', category: '饮品', price: 12.0, status: 'unavailable' },
+  { id: '5', name: '黑椒牛排意面', category: '西餐', price: 28.0, status: 'available' }
 ]
 
 // Dashboard页面统计数据

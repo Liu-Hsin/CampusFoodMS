@@ -5,6 +5,7 @@ import OrderManagementView from '../views/OrderManagementView.vue'
 import UserManagementView from '../views/UserManagementView.vue'
 import FoodDetailView from '../views/FoodDetailView.vue'
 import LoginView from '../views/admin/LoginView.vue'
+import DashboardView from '../views/admin/DashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,14 @@ const router = createRouter({
       component: HomeView,
       meta: {
         requiresAuth: false // 首页无需登录
+      }
+    },
+    {
+      path: '/food',
+      name: 'foodList',
+      component: FoodListView,
+      meta: {
+        requiresAuth: false // 食品列表无需登录
       }
     },
     {
@@ -38,7 +47,7 @@ const router = createRouter({
         {
           path: 'dashboard',
           name: 'adminDashboard',
-          component: FoodListView,
+          component: DashboardView,
           meta: {
             requiresAuth: true,
             requiresAdmin: true

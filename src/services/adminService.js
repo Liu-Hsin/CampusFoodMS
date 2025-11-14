@@ -18,15 +18,15 @@ export const mockAdminUser = {
 export const adminLogin = async (credentials) => {
   try {
     // 实际项目中调用API
-          const response = await request.post('/admin/login', credentials)
-      if (response.data.success) {
-        // 登录成功，保存token
-        localStorage.setItem('token', response.data.data.token)
-        localStorage.setItem('isAdmin', 'true')
-        return response.data
-      } else {
-        throw new Error(response.data.message || '登录失败')
-      }
+    const response = await request.post('/admin/login', credentials)
+    if (response.data.success) {
+      // 登录成功，保存token
+      localStorage.setItem('token', response.data.data.token)
+      localStorage.setItem('isAdmin', 'true')
+      return response.data
+    } else {
+      throw new Error(response.data.message || '登录失败')
+    }
   } catch (error) {
     console.error('管理员登录失败:', error.message || '登录失败')
     // 模拟API调用延迟
@@ -44,7 +44,8 @@ export const adminLogin = async (credentials) => {
                 role: 'admin',
                 isAdmin: true
               }
-            }
+            },
+            message: '登录成功'
           })
         } else {
           resolve({

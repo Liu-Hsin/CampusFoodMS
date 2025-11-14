@@ -41,16 +41,21 @@ export const login = async (credentials) => {
     const password = credentials.password
     
     if (mockUsers[username] && mockUsers[username].password === password) {
-      // 返回模拟的登录响应
+      // 返回模拟的登录响应，与API文档格式一致
       return {
-        token: `mock-token-${username}-${Date.now()}`,
-        user: mockUsers[username]
+        success: true,
+        data: {
+          token: `mock-token-${username}-${Date.now()}`,
+          user: mockUsers[username]
+        },
+        message: '登录成功'
       }
     } else {
       // 模拟登录失败
       throw {
         response: {
           data: {
+            success: false,
             message: '用户名或密码错误'
           }
         }

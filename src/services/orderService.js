@@ -5,9 +5,9 @@ const mockOrders = [
   {
     id: '1',
     user: {
-      id: '101',
+      id: '3', // 对应数据库中的张三用户ID
       name: '张三',
-      phone: '13800138001'
+      phone: '13800138002'
     },
     items: [
       { foodId: '1', name: '宫保鸡丁', price: 28.00, quantity: 2 },
@@ -22,9 +22,9 @@ const mockOrders = [
   {
     id: '2',
     user: {
-      id: '102',
+      id: '4', // 对应数据库中的李四用户ID
       name: '李四',
-      phone: '13800138002'
+      phone: '13800138003'
     },
     items: [
       { foodId: '2', name: '麻婆豆腐', price: 18.00, quantity: 1 },
@@ -39,9 +39,9 @@ const mockOrders = [
   {
     id: '3',
     user: {
-      id: '101',
+      id: '3', // 对应数据库中的张三用户ID
       name: '张三',
-      phone: '13800138001'
+      phone: '13800138002'
     },
     items: [
       { foodId: '4', name: '清蒸鱼', price: 68.00, quantity: 1 },
@@ -56,9 +56,9 @@ const mockOrders = [
   {
     id: '4',
     user: {
-      id: '103',
+      id: '5', // 对应数据库中的王五用户ID
       name: '王五',
-      phone: '13800138003'
+      phone: '13800138004'
     },
     items: [
       { foodId: '1', name: '宫保鸡丁', price: 28.00, quantity: 1 },
@@ -74,9 +74,9 @@ const mockOrders = [
   {
     id: '5',
     user: {
-      id: '104',
-      name: '赵六',
-      phone: '13800138004'
+      id: '2', // 对应数据库中的普通用户ID
+      name: '普通用户',
+      phone: '13800138001'
     },
     items: [
       { foodId: '3', name: '糖醋排骨', price: 38.00, quantity: 2 },
@@ -91,9 +91,9 @@ const mockOrders = [
   {
     id: '6',
     user: {
-      id: '105',
-      name: '钱七',
-      phone: '13800138005'
+      id: '2', // 对应数据库中的普通用户ID
+      name: '普通用户',
+      phone: '13800138001'
     },
     items: [
       { foodId: '5', name: '北京烤鸭', price: 128.00, quantity: 1 },

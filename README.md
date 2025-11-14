@@ -42,7 +42,7 @@ src/
 ### 管理员页面
 1. **管理员登录** (`/admin/login`) - 管理员登录界面
 2. **管理员仪表盘** (`/admin/dashboard`) - 管理员后台主界面
-3. **美食管理** (`/admin/dashboard`) - 管理食品信息，包括添加、编辑、删除和状态管理
+3. **美食管理** (`/admin/food-management`) - 管理食品信息，包括添加、编辑、删除和状态管理
 4. **订单管理** (`/admin/order-management`) - 查看和管理所有订单
 5. **用户管理** (`/admin/user-management`) - 管理系统用户，包括查看、编辑和删除用户
 
