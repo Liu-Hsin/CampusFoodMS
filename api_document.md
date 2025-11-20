@@ -247,6 +247,38 @@ GET /api/foods/1
 ```
 
 - `POST /api/foods` - 创建食品（管理员）
+请求示例
+```json
+{
+  "name": "宫保鸡丁更新",        
+  "description": "经典川菜，麻辣鲜香更新", 
+  "price": 35,          
+  "originalPrice": 39,  
+  "image": "https://picsum.photos/id/1/300/200",       
+  "category": "川菜",    
+  "status": "available"       
+}
+```
+响应示例
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "name": "宫保鸡丁更新",
+    "description": "经典川菜，麻辣鲜香更新",
+    "price": 35,
+    "originalPrice": 35,
+    "image": "https://picsum.photos/id/1/300/200",
+    "category": "川菜",
+    "status": "available",
+    "sales": 1200,
+    "createdAt": "2025-11-18 02:21:15",
+    "updatedAt": "2025-11-18 14:25:14"
+  },
+  "message": "食品创建成功"
+}
+```
 - `PUT /api/foods/{foodId}` - 更新食品信息（管理员）
 ```json
 请求示例

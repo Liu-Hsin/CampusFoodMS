@@ -30,7 +30,7 @@ const mockUsers = {
 export const login = async (credentials) => {
   try {
     // 尝试发送实际请求
-    const response = await api.post('/auth/login', credentials)
+    const response = await api.post('/users/login', credentials)
     return response
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
@@ -66,17 +66,17 @@ export const login = async (credentials) => {
 
 // 用户注册
 export const register = (userData) => {
-  return api.post('/auth/register', userData)
+  return api.post('/users/register', userData)
 }
 
 // 获取用户信息
 export const getUserInfo = () => {
-  return api.get('/users/me')
+  return api.get('/users/profile')
 }
 
 // 更新用户信息
 export const updateUserInfo = (userData) => {
-  return api.put('/users/me', userData)
+  return api.put('/users/profile', userData)
 }
 
 // 获取用户列表（管理员）

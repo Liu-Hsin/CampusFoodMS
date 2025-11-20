@@ -107,7 +107,7 @@ const mockOrders = [
   }
 ]
 
-// 获取订单列表
+// 获取订单列表（普通用户）
 export const getOrderList = async (params = {}) => {
   try {
     // 尝试发送实际请求
@@ -228,11 +228,44 @@ export const updateOrderStatus = async (id, status) => {
   }
 }
 
+// 获取所有订单（管理员）
+export const getAllOrders = async (params = {}) => {
+  try {
+    // 尝试发送实际请求
+    const response = await api.get('/orders/admin', { params })
+    return response
+  } catch (error) {
+    // 后端服务不可用时，使用模拟数据
+    console.log('后端服务不可用，使用模拟所有订单数据')
+    
+    // 模拟筛选和分页
+    let filteredOrders = [...mockOrders]
+    
+    // 按状态筛选
+    if (params.status) {
+      filteredOrders = filteredOrders.filter(order => order.status === params.status)
+    }
+    
+    // 模拟分页
+    const page = params.page || 1
+    const pageSize = params.pageSize || 10
+    const startIndex = (page - 1) * pageSize
+    const paginatedOrders = filteredOrders.slice(startIndex, startIndex + pageSize)
+    
+    return {
+      items: paginatedOrders,
+      total: filteredOrders.length,
+      page: parseInt(page),
+      pageSize: parseInt(pageSize)
+    }
+  }
+}
+
 // 获取用户的订单
 export const getUserOrders = async (userId, params = {}) => {
   try {
     // 尝试发送实际请求
-    const response = await api.get(`/users/${userId}/orders`, { params })
+    const response = await api.get('/orders', { params })
     return response
   } catch (error) {
     // 后端服务不可用时，使用模拟数据

@@ -126,7 +126,7 @@ export const mockAdminCategories = [
 export const getFoodList = async (params = {}) => {
   try {
     // 尝试发送实际请求
-    const response = await api.post('/foods', { params })
+    const response = await api.get('/foods', { params })
     return response
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
@@ -277,9 +277,10 @@ export const deleteFood = async (id) => {
 // 获取管理页面食品分类
 export const getAdminFoodCategories = async () => {
   try {
-    // 尝试发送实际请求
-    const response = await api.get('/foods/categories')
-    return response.map(cat => ({ label: cat, value: cat }))
+    // 尝试发送实际请求 - 从食品列表中提取分类
+    const response = await api.get('/foods')
+    const categories = [...new Set(response.items.map(food => food.category))]
+    return categories.map(cat => ({ label: cat, value: cat }))
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
     console.log('后端服务不可用，使用模拟管理页面食品分类数据')
@@ -291,7 +292,7 @@ export const getAdminFoodCategories = async () => {
 export const getAdminFoodList = async (params = {}) => {
   try {
     // 尝试发送实际请求
-    const response = await api.get('/admin/foods', { params })
+    const response = await api.get('/foods', { params })
     return response
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
@@ -314,9 +315,18 @@ export const getAdminFoodList = async (params = {}) => {
 // 获取Dashboard统计数据
 export const getDashboardStats = async () => {
   try {
-    // 尝试发送实际请求
-    const response = await api.get('/admin/dashboard/stats')
-    return response
+    // 尝试发送实际请求 - 从多个接口获取统计数据
+    const [foodsResponse, ordersResponse, usersResponse] = await Promise.all([
+      api.get('/foods'),
+      api.get('/orders/admin'),
+      api.get('/users')
+    ])
+    
+    return {
+      totalFoods: foodsResponse.total || 0,
+      totalOrders: ordersResponse.total || 0,
+      totalUsers: usersResponse.total || 0
+    }
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
     console.log('后端服务不可用，使用模拟Dashboard统计数据')
@@ -333,9 +343,10 @@ export const getDashboardStats = async () => {
 // 获取最近添加的美食
 export const getRecentFoods = async (limit = 5) => {
   try {
-    // 尝试发送实际请求
-    const response = await api.get('/admin/foods/recent', { params: { limit } })
-    return response
+    // 尝试发送实际请求 - 从食品列表中获取最近添加的食品
+    const response = await api.get('/foods')
+    const sortedFoods = response.items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    return sortedFoods.slice(0, limit)
   } catch (error) {
     // 后端服务不可用时，使用模拟数据
     console.log('后端服务不可用，使用模拟最近添加的美食数据')

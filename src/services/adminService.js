@@ -1,5 +1,5 @@
 // 管理员服务
-import request  from './api'
+import api from './api'
 
 // 模拟管理员数据
 export const mockAdminUser = {
@@ -17,15 +17,22 @@ export const mockAdminUser = {
  */
 export const adminLogin = async (credentials) => {
   try {
-    // 实际项目中调用API
-    const response = await request.post('/admin/login', credentials)
-    if (response.data.success) {
-      // 登录成功，保存token
-      localStorage.setItem('token', response.data.data.token)
-      localStorage.setItem('isAdmin', 'true')
-      return response.data
+    // 实际项目中调用API - 使用普通用户登录接口
+    const response = await api.post('/users/login', credentials)
+    if (response.success) {
+      // 登录成功，保存token和用户信息
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('userInfo', JSON.stringify(response.data.user))
+      localStorage.setItem('isAdmin', response.data.user.isAdmin ? 'true' : 'false')
+      
+      // 检查是否为管理员
+      if (!response.data.user.isAdmin) {
+        throw new Error('该用户没有管理员权限')
+      }
+      
+      return response
     } else {
-      throw new Error(response.data.message || '登录失败')
+      throw new Error(response.message || '登录失败')
     }
   } catch (error) {
     console.error('管理员登录失败:', error.message || '登录失败')

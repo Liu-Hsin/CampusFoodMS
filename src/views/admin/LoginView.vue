@@ -78,11 +78,11 @@ export default {
         loginLoading.value = true
         
         // 调用登录接口
-        const response = await adminLogin(loginForm.username, loginForm.password)
+        const response = await adminLogin(loginForm)
         
         // 存储管理员信息和token
-        localStorage.setItem('adminInfo', JSON.stringify(response.adminInfo))
-        localStorage.setItem('token', response.token)
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user))
+        localStorage.setItem('token', response.data.token)
         localStorage.setItem('isAdmin', 'true')
         
         // 显示成功消息
