@@ -1,13 +1,6 @@
 // 管理员服务
 import api from './api'
 
-// 模拟管理员数据
-export const mockAdminUser = {
-  username: 'admin',
-  password: 'admin123', // 实际项目中应该使用加密密码
-  isAdmin: true
-}
-
 /**
  * 管理员登录
  * @param {Object} credentials - 登录凭据

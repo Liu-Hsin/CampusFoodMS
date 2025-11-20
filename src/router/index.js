@@ -6,6 +6,9 @@ import UserManagementView from '../views/UserManagementView.vue'
 import FoodDetailView from '../views/FoodDetailView.vue'
 import LoginView from '../views/admin/LoginView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
+import AdminFoodListView from '../views/admin/FoodListView.vue'
+import UserListView from '../views/admin/UserListView.vue'
+import OrderListView from '../views/admin/OrderListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +69,33 @@ const router = createRouter({
           path: 'user-management',
           name: 'userManagement',
           component: UserManagementView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'food-management',
+          name: 'foodManagement',
+          component: AdminFoodListView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'user-list',
+          name: 'userList',
+          component: UserListView,
+          meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'order-list',
+          name: 'orderList',
+          component: OrderListView,
           meta: {
             requiresAuth: true,
             requiresAdmin: true

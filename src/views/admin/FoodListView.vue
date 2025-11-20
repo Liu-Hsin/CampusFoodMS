@@ -101,7 +101,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { getFoodList, getCategories, updateFoodStatus, mockAdminFoods, mockAdminCategories } from '../../services/foodService'
+import { getFoodList, getCategories, createFood, updateFood, deleteFood, updateFoodStatus } from '../../services/foodService'
 
 export default {
   name: 'AdminFoodListView',
@@ -130,15 +130,7 @@ export default {
     // 获取分类列表
     const fetchCategories = async () => {
       try {
-        // 尝试获取分类
-        let response = null
-        try {
-          response = await getCategories()
-        } catch (error) {
-          // 如果失败，使用模拟数据
-          console.log('获取分类失败，使用模拟数据')
-          response = mockAdminCategories || ['川菜', '粤菜', '北京菜', '江苏菜', '其他']
-        }
+        const response = await getCategories()
         categories.value = response
       } catch (error) {
         console.error('获取分类失败:', error)
@@ -149,55 +141,16 @@ export default {
     // 获取食品列表
     const fetchFoods = async () => {
       try {
-        // 尝试获取食品列表
-        let response = null
-        try {
-          response = await getFoodList({
-            page: currentPage.value,
-            pageSize: pageSize.value,
-            keyword: searchQuery.value,
-            category: selectedCategory.value,
-            status: selectedStatus.value
-          })
-        } catch (error) {
-          // 如果失败，使用模拟数据
-          console.log('获取食品列表失败，使用模拟数据')
-          // 使用foodService中定义的mock数据
-          let filteredFoods = [...mockAdminFoods]
-          
-          // 处理筛选
-          if (searchQuery.value) {
-            const keyword = searchQuery.value.toLowerCase()
-            filteredFoods = filteredFoods.filter(
-              item => item.name.toLowerCase().includes(keyword) || 
-                     (item.description && item.description.toLowerCase().includes(keyword))
-            )
-          }
-          
-          if (selectedCategory.value) {
-            filteredFoods = filteredFoods.filter(item => item.category === selectedCategory.value)
-          }
-          
-          if (selectedStatus.value) {
-            filteredFoods = filteredFoods.filter(item => item.status === selectedStatus.value)
-          }
-          
-          // 处理分页
-          const start = (currentPage.value - 1) * pageSize.value
-          const end = start + pageSize.value
-          response = {
-            list: filteredFoods.slice(start, end),
-            total: filteredFoods.length
-          }
-        }
+        const response = await getFoodList({
+          page: currentPage.value,
+          pageSize: pageSize.value,
+          keyword: searchQuery.value,
+          category: selectedCategory.value,
+          status: selectedStatus.value
+        })
         
-        if (response) {
-          foods.value = response.list || []
-          totalFoods.value = response.total || 0
-        } else {
-          foods.value = []
-          totalFoods.value = 0
-        }
+        foods.value = response.items || []
+        totalFoods.value = response.total || 0
       } catch (error) {
         console.error('获取食品列表失败:', error)
         ElMessage.error('获取食品列表失败')
@@ -218,8 +171,14 @@ export default {
     }
 
     // 编辑食品
-    const handleEdit = (id) => {
-      ElMessage.info('编辑功能开发中')
+    const handleEdit = async (id) => {
+      try {
+        // 跳转到编辑页面
+        router.push(`/admin/food-edit/${id}`)
+      } catch (error) {
+        console.error('跳转编辑页面失败:', error)
+        ElMessage.error('跳转失败')
+      }
     }
 
     // 删除/上架食品
@@ -238,28 +197,21 @@ export default {
           }
         )
         
-        // 尝试更新状态
-        try {
-          await updateFoodStatus(id, food?.status === 'available' ? 'unavailable' : 'available')
-          ElMessage.success(`${actionText}成功`)
-          fetchFoods() // 重新加载列表
-        } catch (error) {
-          console.log('更新状态失败，模拟更新成功')
-          ElMessage.success(`${actionText}成功`)
-          // 模拟更新本地数据
-          const index = foods.value.findIndex(item => item.id === id)
-          if (index !== -1) {
-            foods.value[index].status = food?.status === 'available' ? 'unavailable' : 'available'
-          }
-        }
+        // 更新状态
+        await updateFoodStatus(id, food?.status === 'available' ? 'unavailable' : 'available')
+        ElMessage.success(`${actionText}成功`)
+        fetchFoods() // 重新加载列表
       } catch (error) {
-        // 用户取消
+        if (error !== 'cancel') {
+          console.error('更新状态失败:', error)
+          ElMessage.error(`${actionText}失败`)
+        }
       }
     }
 
     // 添加食品
     const handleAddFood = () => {
-      ElMessage.info('添加功能开发中')
+      router.push('/admin/food-add')
     }
 
     // 分页处理

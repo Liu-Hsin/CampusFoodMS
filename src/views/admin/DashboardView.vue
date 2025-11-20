@@ -150,17 +150,17 @@ export default {
     
     // 导航到美食列表
     const navigateToFoodList = () => {
-      router.push('/admin/foodList')
+      router.push('/admin/food-management')
     }
     
     // 导航到订单管理
     const navigateToOrders = () => {
-      router.push('/admin/orderManagement')
+      router.push('/admin/order-list')
     }
     
     // 导航到用户管理
     const navigateToUsers = () => {
-      router.push('/admin/userManagement')
+      router.push('/admin/user-list')
     }
     
     // 添加新美食

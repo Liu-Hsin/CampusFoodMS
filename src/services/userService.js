@@ -1,31 +1,5 @@
 import api from './api'
 
-// 模拟用户数据
-const mockUsers = {
-  // 普通用户
-  user: {
-    username: 'user',
-    password: '123456',
-    id: '1',
-    name: '普通用户',
-    email: 'user@example.com',
-    isAdmin: false,
-    createdAt: '2023-01-01T00:00:00Z',
-    lastLogin: '2023-12-01T00:00:00Z'
-  },
-  // 管理员用户
-  admin: {
-    username: 'admin',
-    password: 'admin123',
-    id: '2',
-    name: '管理员',
-    email: 'admin@example.com',
-    isAdmin: true,
-    createdAt: '2023-01-01T00:00:00Z',
-    lastLogin: '2023-12-01T00:00:00Z'
-  }
-}
-
 // 用户登录
 export const login = async (credentials) => {
   try {

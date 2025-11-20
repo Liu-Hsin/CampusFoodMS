@@ -20,17 +20,27 @@
             <el-menu-item index="adminDashboard">
               <template #title>
                 <el-icon><House /></el-icon>
+                <span>仪表盘</span>
+              </template>
+            </el-menu-item>
+            <el-menu-item index="foodManagement">
+              <template #title>
+                <el-icon><ShoppingBag /></el-icon>
                 <span>美食管理</span>
               </template>
             </el-menu-item>
-            <el-sub-menu index="management">
+            <el-menu-item index="orderList">
               <template #title>
-                <el-icon><Setting /></el-icon>
-                <span>管理中心</span>
+                <el-icon><Document /></el-icon>
+                <span>订单管理</span>
               </template>
-              <el-menu-item index="orderManagement">订单管理</el-menu-item>
-              <el-menu-item index="userManagement">用户管理</el-menu-item>
-            </el-sub-menu>
+            </el-menu-item>
+            <el-menu-item index="userList">
+              <template #title>
+                <el-icon><User /></el-icon>
+                <span>用户管理</span>
+              </template>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         
