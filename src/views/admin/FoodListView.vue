@@ -101,7 +101,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { getFoodList, getCategories, createFood, updateFood, deleteFood, updateFoodStatus } from '../../services/foodService'
+import { getFoodList, getCategories, createFood, deleteFood, updateFoodStatus } from '../../services/foodService'
 
 export default {
   name: 'AdminFoodListView',

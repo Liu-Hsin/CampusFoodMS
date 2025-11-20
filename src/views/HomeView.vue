@@ -49,7 +49,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
-import { getFoodList, mockFoods } from '../services/foodService'
+import { getFoodList } from '../services/foodService'
 import { useRouter } from 'vue-router'
 
 export default {
@@ -60,43 +60,6 @@ export default {
     const categories = ref([])
     const selectedCategory = ref('')
     
-    // 默认的mock数据，确保在无服务端和无外部mock数据时仍能正常显示
-    const defaultMockFoods = [
-      {
-        id: '1',
-        name: '宫保鸡丁',
-        description: '经典川菜，鸡肉与花生的完美搭配',
-        price: 18.00,
-        originalPrice: 22.00,
-        image: '/images/food1.jpg',
-        category: '热菜',
-        status: 'available',
-        sales: 128
-      },
-      {
-        id: '2',
-        name: '鱼香肉丝',
-        description: '酸甜可口，色泽红亮',
-        price: 16.00,
-        originalPrice: 19.00,
-        image: '/images/food2.jpg',
-        category: '热菜',
-        status: 'available',
-        sales: 96
-      },
-      {
-        id: '3',
-        name: '酸辣土豆丝',
-        description: '开胃小菜，爽脆可口',
-        price: 10.00,
-        originalPrice: 12.00,
-        image: '/images/food3.jpg',
-        category: '凉菜',
-        status: 'available',
-        sales: 85
-      }
-    ]
-
     // 获取美食数据
     const fetchFoods = async () => {
       try {
@@ -116,28 +79,12 @@ export default {
         // 如果获取到有效的数据，使用获取的数据
         if (Array.isArray(foodItems) && foodItems.length > 0) {
           foods.value = foodItems
-        } else if (Array.isArray(mockFoods) && mockFoods.length > 0) {
-          // 尝试使用foodService中的mock数据
-          foods.value = mockFoods
-        } else {
-          // 使用默认mock数据
-          foods.value = defaultMockFoods
-        }
-
+        } 
         // 提取唯一分类
         const uniqueCategories = [...new Set(foods.value.map(food => food.category))]
         categories.value = uniqueCategories.sort()
       } catch (error) {
         console.error('获取美食数据失败:', error)
-        // 出错时使用mock数据
-        if (Array.isArray(mockFoods) && mockFoods.length > 0) {
-          foods.value = mockFoods
-        } else {
-          foods.value = defaultMockFoods
-        }
-        // 提取唯一分类
-        const uniqueCategories = [...new Set(foods.value.map(food => food.category))]
-        categories.value = uniqueCategories.sort()
       }
     }
 

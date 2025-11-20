@@ -130,38 +130,7 @@ export default {
           })
         } catch (error) {
           // 如果失败，使用模拟数据
-          console.log('获取食品列表失败，使用模拟数据')
-          // 模拟数据已在foodService中定义
-          const mockFoods = [
-            { id: '1', name: '宫保鸡丁', category: '川菜', price: 28.00, originalPrice: 32.00, status: 'available', sales: 1200 },
-            { id: '2', name: '麻婆豆腐', category: '川菜', price: 18.00, originalPrice: 22.00, status: 'available', sales: 1500 },
-            { id: '3', name: '糖醋排骨', category: '粤菜', price: 38.00, originalPrice: 42.00, status: 'available', sales: 980 },
-            { id: '4', name: '清蒸鱼', category: '粤菜', price: 68.00, originalPrice: 78.00, status: 'available', sales: 850 },
-            { id: '5', name: '北京烤鸭', category: '北京菜', price: 128.00, originalPrice: 158.00, status: 'available', sales: 1800 },
-            { id: '6', name: '扬州炒饭', category: '江苏菜', price: 22.00, originalPrice: 26.00, status: 'available', sales: 2100 }
-          ]
-          
-          // 处理筛选
-          let filteredFoods = [...mockFoods]
-          if (searchQuery.value) {
-            const keyword = searchQuery.value.toLowerCase()
-            filteredFoods = filteredFoods.filter(
-              item => item.name.toLowerCase().includes(keyword) || 
-                     (item.description && item.description.toLowerCase().includes(keyword))
-            )
-          }
-          
-          if (selectedCategory.value) {
-            filteredFoods = filteredFoods.filter(item => item.category === selectedCategory.value)
-          }
-          
-          // 处理分页
-          const start = (currentPage.value - 1) * pageSize.value
-          const end = start + pageSize.value
-          response = {
-            list: filteredFoods.slice(start, end),
-            total: filteredFoods.length
-          }
+          console.log('获取食品列表失败，使用模拟数据')          
         }
         
         if (response) {

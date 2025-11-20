@@ -72,7 +72,7 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import { getFoodDetail, mockFoods } from '../services/foodService'
+import { getFoodDetail } from '../services/foodService'
 import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 

@@ -95,7 +95,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ShoppingBag, Document, User } from '@element-plus/icons-vue'
-import { getDashboardStats, getRecentFoods, mockDashboardStats, mockRecentFoods } from '../../services/foodService'
+import { getDashboardStats, getRecentFoods } from '../../services/foodService'
 
 export default {
   name: 'DashboardView',
@@ -129,17 +129,17 @@ export default {
         if (recentFoodsData && recentFoodsData.length > 0) {
           recentFoods.value = recentFoodsData
         } else {
-          recentFoods.value = mockRecentFoods
+          recentFoods.value = []
         }
       } catch (error) {
         console.error('获取统计数据失败:', error)
         ElMessage.error('获取统计数据失败')
         
-        // 提供默认模拟数据
-        totalFoods.value = mockDashboardStats.totalFoods
-        totalOrders.value = mockDashboardStats.totalOrders
-        totalUsers.value = mockDashboardStats.totalUsers
-        recentFoods.value = mockRecentFoods
+        // 提供默认数据
+        totalFoods.value = 0
+        totalOrders.value = 0
+        totalUsers.value = 0
+        recentFoods.value = []
       }
     }
     
