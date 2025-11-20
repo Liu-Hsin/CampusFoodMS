@@ -1,654 +1,743 @@
-# 校园美食管理系统 - API接口文档
 
-## 接口概述
-本文档详细描述校园美食管理系统所需的后端API接口，供后端开发人员参考实现。所有接口均基于RESTful设计风格，返回JSON格式数据。
+## API接口说明
 
-## 基础配置
-- **基础URL**: `http://127.0.0.1:8080/api`
-- **请求头**: 
-  - `Content-Type: application/json`
-  - 认证接口成功后需在后续请求中添加: `Authorization: Bearer {token}`
-- **响应格式**:
-  ```json
-  {
-    "success": true/false,
-    "data": {}, // 返回的数据
-    "message": "操作结果描述"
-  }
-  ```
+## 地址 
+- `http://localhost:8081/`
 
-## 1. 认证接口
+eg：http://localhost:8081/api/users/register
 
-### 1.1 用户登录
-- **URL**: `/auth/login`
-- **方法**: `POST`
-- **描述**: 用户登录获取访问令牌
-- **请求参数**:
-  ```json
-  {
-    "username": "string", // 用户名
-    "password": "string"  // 密码
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+### 访问接口文档
+项目启动后，可以通过以下地址访问Swagger接口文档：
+- Swagger UI: http://localhost:8081/api/swagger-ui.html
+- API文档: http://localhost:8081/api/v3/api-docs
+
+### 认证相关
+1. 所有需要认证的接口必须在请求头中包含 `Authorization: Bearer {token}`
+2. 时间格式统一为 `yyyy-MM-dd HH:mm:ss`
+3. 金额使用BigDecimal类型，保留2位小数
+4. 分页参数从1开始计数
+5. 管理员接口需要用户具有管理员权限，普通用户接口则不需要。
+
+
+- `POST /api/users/register` - 用户注册 
+```json
+请求示例
+{
+  "username": "string", 
+  "password": "string", 
+  "name": "string",   
+  "email": "string" 
+}
+响应示例
+{
     "success": true,
     "data": {
-      "token": "string", // JWT令牌
-      "user": {
-        "id": "string",
-        "username": "string",
-        "name": "string",
-        "email": "string",
-        "isAdmin": boolean
-      }
-    },
-    "message": "登录成功"
-  }
-  ```
-
-### 1.2 用户注册
-- **URL**: `/auth/register`
-- **方法**: `POST`
-- **描述**: 新用户注册
-- **请求参数**:
-  ```json
-  {
-    "username": "string", // 用户名
-    "password": "string", // 密码
-    "name": "string",     // 姓名
-    "email": "string"     // 邮箱
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "string",
-      "username": "string",
-      "name": "string",
-      "email": "string"
+        "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+        "username": "admin123",
+        "name": "admin",
+        "email": "liuhsin@qq.com",
+        "phone": null,
+        "isAdmin": false,
+        "status": "active",
+        "createdAt": null,
+        "lastLogin": null
     },
     "message": "注册成功"
-  }
-  ```
+}
+```
 
-### 1.3 管理员登录
-- **URL**: `/admin/login`
-- **方法**: `POST`
-- **描述**: 管理员专用登录接口
-- **请求参数**:
-  ```json
-  {
-    "username": "string", // 管理员用户名
-    "password": "string"  // 管理员密码
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+- `POST /api/users/login` - 用户登录
+```json
+请求示例
+{
+  "username": "string", 
+  "password": "string"  
+}
+响应示例
+{
     "success": true,
     "data": {
-      "token": "string",
-      "userInfo": {
-        "username": "string",
-        "role": "admin",
-        "isAdmin": true
-      }
+        "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbjEyMyIsImlhdCI6MTc2MzQ0NTA5MiwiZXhwIjoxNzYzNTMxNDkyfQ.2p9Eya-CPMy5e0u-OUmevJKuAbVw-9u1J9V1EeWoyPfyW1DuKv7QGdZZHADMObqj-0_U5i-gvgegVuIjw6zVEA",
+        "user": {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": "admin",
+            "email": "liuhsin@qq.com",
+            "phone": null,
+            "isAdmin": false,
+            "status": "active",
+            "createdAt": "2025-11-18 13:46:42",
+            "lastLogin": "2025-11-18 13:51:32"
+        }
     },
     "message": "登录成功"
-  }
-  ```
+}
+```
 
-### 1.4 管理员登出
-- **URL**: `/admin/logout`
-- **方法**: `POST`
-- **描述**: 管理员登出
-- **认证**: 需要管理员token
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "message": "登出成功"
-  }
-  ```
-
-## 2. 用户接口
-
-### 2.1 获取当前用户信息
-- **URL**: `/users/me`
-- **方法**: `GET`
-- **描述**: 获取当前登录用户的详细信息
-- **认证**: 需要token
-- **成功响应**:
-  ```json
-  {
+- `GET /api/users/profile` - 获取当前用户信息
+```json
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "username": "string",
-      "name": "string",
-      "email": "string",
-      "isAdmin": boolean,
-      "createdAt": "string",
-      "lastLogin": "string"
-    }
-  }
-  ```
-
-### 2.2 更新用户信息
-- **URL**: `/users/me`
-- **方法**: `PUT`
-- **描述**: 更新当前用户的基本信息
-- **认证**: 需要token
-- **请求参数**:
-  ```json
-  {
-    "name": "string",     // 姓名
-    "email": "string"     // 邮箱
-    // 可根据需求添加其他字段
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+        "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+        "username": "admin123",
+        "name": "admin",
+        "email": "liuhsin@qq.com",
+        "phone": null,
+        "isAdmin": false,
+        "status": "active",
+        "createdAt": "2025-11-18 13:46:42",
+        "lastLogin": "2025-11-18 13:51:33"
+    },
+    "message": "操作成功"
+}
+```
+- `PUT /api/users/profile` - 更新用户信息
+```json
+请求示例
+{
+  "name": "admin1234",     
+  "email": "liuhsin@vip.qq.com",  
+  "phone":"12345678901"
+}
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "username": "string",
-      "name": "string",
-      "email": "string"
+        "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+        "username": "admin123",
+        "name": "admin1234",
+        "email": "liuhsin@vip.qq.com",
+        "phone": "12345678901",
+        "isAdmin": false,
+        "status": "active",
+        "createdAt": "2025-11-18 13:46:42",
+        "lastLogin": "2025-11-18 13:51:33"
     },
     "message": "更新成功"
-  }
-  ```
+}
+```
 
-### 2.3 获取用户列表（管理员）
-- **URL**: `/users`
-- **方法**: `GET`
-- **描述**: 获取系统中的所有用户列表
-- **认证**: 需要管理员token
-- **请求参数** (查询参数):
-  - `page`: 页码，默认为1
-  - `pageSize`: 每页数量，默认为10
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "items": [
+### 食品相关
+- `GET /api/foods` - 获取食品列表（支持分页、搜索、筛选）
+```json 
+响应示例
+{
+    "items": [
         {
-          "id": "string",
-          "username": "string",
-          "name": "string",
-          "email": "string",
-          "isAdmin": boolean,
-          "createdAt": "string",
-          "lastLogin": "string"
-        }
-      ],
-      "total": number,
-      "page": number,
-      "pageSize": number
-    }
-  }
-  ```
-
-### 2.4 更新用户角色（管理员）
-- **URL**: `/users/:userId/role`
-- **方法**: `PUT`
-- **描述**: 更新指定用户的角色权限
-- **认证**: 需要管理员token
-- **路径参数**:
-  - `userId`: 用户ID
-- **请求参数**:
-  ```json
-  {
-    "role": "string" // 角色类型，如 "admin" 或 "user"
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "message": "角色更新成功"
-  }
-  ```
-
-### 2.5 删除用户（管理员）
-- **URL**: `/users/:userId`
-- **方法**: `DELETE`
-- **描述**: 删除指定用户
-- **认证**: 需要管理员token
-- **路径参数**:
-  - `userId`: 用户ID
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "message": "用户删除成功"
-  }
-  ```
-
-## 3. 食品接口
-
-### 3.1 获取食品列表
-- **URL**: `/foods`
-- **方法**: `POST`
-- **描述**: 获取食品列表，支持分页和筛选
-- **请求参数**:
-  ```json
-  {
-    "params": {
-      "page": 1,
-      "pageSize": 10,
-      "category": "string", // 可选，按分类筛选
-      "status": "string"    // 可选，按状态筛选
-    }
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "items": [
+            "id": "1",
+            "name": "宫保鸡丁",
+            "description": "经典川菜，麻辣鲜香",
+            "price": 28.00,
+            "originalPrice": 28.00,
+            "image": "https://picsum.photos/id/1/300/200",
+            "category": "川菜",
+            "status": "available",
+            "sales": 1200,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        },
         {
-          "id": "string",
-          "name": "string",
-          "description": "string",
-          "price": number,
-          "originalPrice": number,
-          "image": "string",
-          "category": "string",
-          "status": "string", // available, unavailable
-          "sales": number,
-          "createdAt": "string",
-          "updatedAt": "string"
+            "id": "10",
+            "name": "黑椒牛排意面",
+            "description": "口感丰富的意大利经典",
+            "price": 28.00,
+            "originalPrice": 28.00,
+            "image": "https://picsum.photos/id/10/300/200",
+            "category": "西餐",
+            "status": "available",
+            "sales": 680,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        },
+        {
+            "id": "2",
+            "name": "麻婆豆腐",
+            "description": "麻辣嫩滑，下饭神器",
+            "price": 18.00,
+            "originalPrice": 18.00,
+            "image": "https://picsum.photos/id/2/300/200",
+            "category": "川菜",
+            "status": "available",
+            "sales": 1500,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
         }
-      ],
-      "total": number,
-      "page": number,
-      "pageSize": number
-    }
-  }
-  ```
+    ],
+    "total": 10,
+    "page": 1,
+    "pageSize": 10
+}
+```
 
-### 3.2 获取食品分类列表
-- **URL**: `/foods/categories`
-- **方法**: `GET`
-- **描述**: 获取所有食品分类
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": [
-      "川菜", "粤菜", "北京菜", "江苏菜", "浙江菜", "湘菜", "福建菜", "徽菜"
-    ]
-  }
-  ```
+- `GET /api/foods/available` - 获取可用食品列表
+```json
+响应示例
+{
+    "items": [
+        {
+            "id": "1",
+            "name": "宫保鸡丁",
+            "description": "经典川菜，麻辣鲜香",
+            "price": 28.00,
+            "originalPrice": 28.00,
+            "image": "https://picsum.photos/id/1/300/200",
+            "category": "川菜",
+            "status": "available",
+            "sales": 1200,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        },
+        {
+            "id": "10",
+            "name": "黑椒牛排意面",
+            "description": "口感丰富的意大利经典",
+            "price": 28.00,
+            "originalPrice": 28.00,
+            "image": "https://picsum.photos/id/10/300/200",
+            "category": "西餐",
+            "status": "available",
+            "sales": 680,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        },
+        {
+            "id": "2",
+            "name": "麻婆豆腐",
+            "description": "麻辣嫩滑，下饭神器",
+            "price": 18.00,
+            "originalPrice": 18.00,
+            "image": "https://picsum.photos/id/2/300/200",
+            "category": "川菜",
+            "status": "available",
+            "sales": 1500,
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        }
+    ],
+    "total": 10,
+    "page": 1,
+    "pageSize": 10
+}
+```
 
-### 3.3 获取食品详情
-- **URL**: `/foods/:id`
-- **方法**: `GET`
-- **描述**: 获取指定食品的详细信息
-- **路径参数**:
-  - `id`: 食品ID
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "string",
-      "name": "string",
-      "description": "string",
-      "price": number,
-      "originalPrice": number,
-      "image": "string",
-      "category": "string",
-      "status": "string",
-      "sales": number,
-      "createdAt": "string",
-      "updatedAt": "string"
-    }
-  }
-  ```
-
-### 3.4 创建食品（管理员）
-- **URL**: `/foods`
-- **方法**: `POST`
-- **描述**: 创建新的食品
-- **认证**: 需要管理员token
-- **请求参数**:
-  ```json
-  {
-    "name": "string",
-    "description": "string",
-    "price": number,
-    "originalPrice": number,
-    "image": "string",
-    "category": "string",
-    "status": "string"
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+- `GET /api/foods/{foodId}` - 获取食品详情
+```json
+请求示例
+GET /api/foods/1
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "name": "string",
-      "description": "string",
-      "price": number,
-      "originalPrice": number,
-      "image": "string",
-      "category": "string",
-      "status": "string",
-      "sales": 0,
-      "createdAt": "string",
-      "updatedAt": "string"
+        "id": "1",
+        "name": "宫保鸡丁",
+        "description": "经典川菜，麻辣鲜香",
+        "price": 28.00,
+        "originalPrice": 28.00,
+        "image": "https://picsum.photos/id/1/300/200",
+        "category": "川菜",
+        "status": "available",
+        "sales": 1200,
+        "createdAt": "2025-11-18 02:21:15",
+        "updatedAt": "2025-11-18 02:21:15"
     },
-    "message": "食品创建成功"
-  }
-  ```
+    "message": "操作成功"
+}
+```
 
-### 3.5 更新食品信息（管理员）
-- **URL**: `/foods/:id`
-- **方法**: `PUT`
-- **描述**: 更新指定食品的信息
-- **认证**: 需要管理员token
-- **路径参数**:
-  - `id`: 食品ID
-- **请求参数**:
-  ```json
-  {
-    "name": "string",        // 可选
-    "description": "string", // 可选
-    "price": number,          // 可选
-    "originalPrice": number,  // 可选
-    "image": "string",       // 可选
-    "category": "string",    // 可选
-    "status": "string"       // 可选
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+- `POST /api/foods` - 创建食品（管理员）
+- `PUT /api/foods/{foodId}` - 更新食品信息（管理员）
+```json
+请求示例
+PUT /api/foods/1
+{
+  "name": "宫保鸡丁更新",        // 可选
+  "description": "经典川菜，麻辣鲜香更新", // 可选
+  "price": 35,          // 可选
+  "originalPrice": 39,  // 可选
+  "image": "https://picsum.photos/id/1/300/200",       // 可选
+  "category": "川菜",    // 可选
+  "status": "available"       // 可选
+}
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "name": "string",
-      "description": "string",
-      "price": number,
-      "originalPrice": number,
-      "image": "string",
-      "category": "string",
-      "status": "string",
-      "sales": number,
-      "createdAt": "string",
-      "updatedAt": "string"
+        "id": "1",
+        "name": "宫保鸡丁更新",
+        "description": "经典川菜，麻辣鲜香更新",
+        "price": 35,
+        "originalPrice": 35,
+        "image": "https://picsum.photos/id/1/300/200",
+        "category": "川菜",
+        "status": "available",
+        "sales": 1200,
+        "createdAt": "2025-11-18 02:21:15",
+        "updatedAt": "2025-11-18 14:25:14"
     },
     "message": "食品更新成功"
-  }
-  ```
+}
+```
 
-### 3.6 删除食品（管理员）
-- **URL**: `/foods/:id`
-- **方法**: `DELETE`
-- **描述**: 删除指定食品
-- **认证**: 需要管理员token
-- **路径参数**:
-  - `id`: 食品ID
-- **成功响应**:
-  ```json
-  {
+- `DELETE /api/foods/{foodId}` - 删除食品（管理员）
+```json
+请求示例
+DELETE /api/foods/1
+响应示例
+{
     "success": true,
+    "data": null,
     "message": "食品删除成功"
-  }
-  ```
+}
+```
 
-## 4. 订单接口
-
-### 4.1 获取订单列表
-- **URL**: `/orders`
-- **方法**: `GET`
-- **描述**: 获取订单列表，支持分页和筛选
-- **认证**: 需要token，管理员可查看所有订单
-- **请求参数** (查询参数):
-  - `page`: 页码，默认为1
-  - `pageSize`: 每页数量，默认为10
-  - `status`: 可选，按状态筛选
-- **成功响应**:
-  ```json
-  {
+- `PUT /api/foods/{foodId}/stock` - 更新食品库存（管理员）
+```json
+请求示例
+PUT /api/foods/1/stock?quantity=100
+响应示例  
+{
     "success": true,
-    "data": {
-      "items": [
-        {
-          "id": "string",
-          "user": {
-            "id": "string",
-            "name": "string",
-            "phone": "string"
-          },
-          "items": [
-            {
-              "foodId": "string",
-              "name": "string",
-              "price": number,
-              "quantity": number
-            }
-          ],
-          "totalAmount": number,
-          "status": "string",
-          "createdAt": "string",
-          "updatedAt": "string",
-          "address": "string"
-        }
-      ],
-      "total": number,
-      "page": number,
-      "pageSize": number
-    }
-  }
-  ```
+    "data": null,
+    "message": "库存更新成功"
+}
+```
 
-### 4.2 获取订单详情
-- **URL**: `/orders/:id`
-- **方法**: `GET`
-- **描述**: 获取指定订单的详细信息
-- **认证**: 需要token，管理员可查看所有订单详情
-- **路径参数**:
-  - `id`: 订单ID
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "string",
-      "user": {
-        "id": "string",
-        "name": "string",
-        "phone": "string"
-      },
-      "items": [
-        {
-          "foodId": "string",
-          "name": "string",
-          "price": number,
-          "quantity": number
-        }
-      ],
-      "totalAmount": number,
-      "status": "string",
-      "createdAt": "string",
-      "updatedAt": "string",
-      "address": "string"
-    }
-  }
-  ```
 
-### 4.3 创建订单
-- **URL**: `/orders`
-- **方法**: `POST`
-- **描述**: 创建新订单
-- **认证**: 需要token
-- **请求参数**:
-  ```json
-  {
+### 订单相关
+- `POST /api/orders` - 创建订单
+```json 
+请求示例
+{
+    "user": "admin123",
     "items": [
-      {
-        "foodId": "string",
-        "name": "string",
-        "price": number,
-        "quantity": number
-      }
+        {
+            "foodId": "1", // 食品ID，必填
+            "name": "宫保鸡丁更新", // 食品名称
+            "price": 35.00, // 单价
+            "quantity": 2 // 数量
+        }
     ],
-    "totalAmount": number,
-    "address": "string"
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+    "totalAmount": 70.00, // 总金额，必填，必须大于0
+    "address": "学生宿舍A栋101室" // 配送地址，必填
+}
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "user": {
-        "id": "string",
-        "name": "string",
-        "phone": "string"
-      },
-      "items": [
-        {
-          "foodId": "string",
-          "name": "string",
-          "price": number,
-          "quantity": number
-        }
-      ],
-      "totalAmount": number,
-      "status": "pending",
-      "createdAt": "string",
-      "updatedAt": "string",
-      "address": "string"
+        "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+        "user": {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": null,
+            "email": null,
+            "phone": null,
+            "isAdmin": null,
+            "status": null,
+            "createdAt": null,
+            "lastLogin": null
+        },
+        "items": [
+            {
+                "foodId": "1",
+                "name": "宫保鸡丁更新",
+                "price": 35.00,
+                "quantity": 2
+            }
+        ],
+        "totalAmount": 70.00,
+        "status": "pending",
+        "address": "学生宿舍A栋101室",
+        "createdAt": "2025-11-18 15:26:17",
+        "updatedAt": null
     },
     "message": "订单创建成功"
-  }
-  ```
+}
 
-### 4.4 更新订单状态（管理员）
-- **URL**: `/orders/:id/status`
-- **方法**: `PUT`
-- **描述**: 更新指定订单的状态
-- **认证**: 需要管理员token
-- **路径参数**:
-  - `id`: 订单ID
-- **请求参数**:
-  ```json
-  {
-    "status": "string" // pending, confirmed, preparing, delivered, completed, cancelled
-  }
-  ```
-- **成功响应**:
-  ```json
-  {
+```
+
+- `GET /api/orders` - 获取登录用户订单列表
+```json
+响应示例
+{
+    "items": [
+        {
+            "id": "441fd998-e92c-4d7d-a2d0-8ff74610a385",
+            "user": {
+                "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+                "username": "admin123",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [
+                {
+                    "foodId": "1",
+                    "name": "宫保鸡丁更新",
+                    "price": 35.00,
+                    "quantity": 2
+                }
+            ],
+            "totalAmount": 70.00,
+            "status": "pending",
+            "address": "学生宿舍A栋101室",
+            "createdAt": "2025-11-19 11:02:37",
+            "updatedAt": "2025-11-19 11:02:37"
+        },
+        {
+            "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+            "user": {
+                "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+                "username": "admin123",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [
+                {
+                    "foodId": "1",
+                    "name": "宫保鸡丁更新",
+                    "price": 35.00,
+                    "quantity": 2
+                }
+            ],
+            "totalAmount": 70.00,
+            "status": "preparing",
+            "address": "学生宿舍A栋101室",
+            "createdAt": "2025-11-18 15:26:18",
+            "updatedAt": "2025-11-19 11:21:57"
+        }
+    ],
+    "total": 2,
+    "page": 1,
+    "pageSize": 10
+}
+```
+
+- `GET /api/orders/{orderId}` - 获取订单详情
+```json
+请求示例
+GET /api/orders/682ff962-ca64-4878-b118-62dbdba2cc85
+响应示例
+{
     "success": true,
     "data": {
-      "id": "string",
-      "status": "string",
-      "updatedAt": "string"
+        "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+        "user": {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": null,
+            "email": null,
+            "phone": null,
+            "isAdmin": null,
+            "status": null,
+            "createdAt": null,
+            "lastLogin": null
+        },
+        "items": [
+            {
+                "foodId": "1",
+                "name": "宫保鸡丁更新",
+                "price": 35.00,
+                "quantity": 2
+            }
+        ],
+        "totalAmount": 70.00,
+        "status": "preparing",
+        "address": "学生宿舍A栋101室",
+        "createdAt": "2025-11-18 15:26:18",
+        "updatedAt": "2025-11-19 11:21:57"
+    },
+    "message": "操作成功"
+}
+```
+
+- `PUT /api/orders/{orderId}/status` - 更新订单状态
+- 订单状态，必填，如：pending, confirmed, preparing, delivering, completed, cancelled
+```json
+请求示例
+PUT /api/orders/682ff962-ca64-4878-b118-62dbdba2cc85/status
+{
+    "status": "cancelled"
+}
+响应示例
+{
+    "success": true,
+    "data": {
+        "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+        "user": {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": null,
+            "email": null,
+            "phone": null,
+            "isAdmin": null,
+            "status": null,
+            "createdAt": null,
+            "lastLogin": null
+        },
+        "items": [
+            {
+                "foodId": "1",
+                "name": "宫保鸡丁更新",
+                "price": 35.00,
+                "quantity": 2
+            }
+        ],
+        "totalAmount": 70.00,
+        "status": "cancelled",
+        "address": "学生宿舍A栋101室",
+        "createdAt": "2025-11-18 15:26:18",
+        "updatedAt": "2025-11-20 09:52:48"
     },
     "message": "订单状态更新成功"
-  }
-  ```
+}
+```
 
-### 4.5 获取用户订单列表
-- **URL**: `/users/:userId/orders`
-- **方法**: `GET`
-- **描述**: 获取指定用户的订单列表
-- **认证**: 需要token，用户只能查看自己的订单
-- **路径参数**:
-  - `userId`: 用户ID
-- **请求参数** (查询参数):
-  - `page`: 页码，默认为1
-  - `pageSize`: 每页数量，默认为10
-  - `status`: 可选，按状态筛选
-- **成功响应**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "items": [
+- `GET /api/orders/admin` - 获取所有订单（管理员）
+```json
+请求示例
+GET /api/orders/admin
+响应示例
+{
+    "items": [
         {
-          "id": "string",
-          "items": [
-            {
-              "foodId": "string",
-              "name": "string",
-              "price": number,
-              "quantity": number
-            }
-          ],
-          "totalAmount": number,
-          "status": "string",
-          "createdAt": "string",
-          "updatedAt": "string",
-          "address": "string"
+            "id": "441fd998-e92c-4d7d-a2d0-8ff74610a385",
+            "user": {
+                "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+                "username": "admin123",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [
+                {
+                    "foodId": "1",
+                    "name": "宫保鸡丁更新",
+                    "price": 35.00,
+                    "quantity": 2
+                }
+            ],
+            "totalAmount": 70.00,
+            "status": "pending",
+            "address": "学生宿舍A栋101室",
+            "createdAt": "2025-11-19 11:02:37",
+            "updatedAt": "2025-11-19 11:02:37"
+        },
+        {
+            "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+            "user": {
+                "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+                "username": "admin123",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [
+                {
+                    "foodId": "1",
+                    "name": "宫保鸡丁更新",
+                    "price": 35.00,
+                    "quantity": 2
+                }
+            ],
+            "totalAmount": 70.00,
+            "status": "cancelled",
+            "address": "学生宿舍A栋101室",
+            "createdAt": "2025-11-18 15:26:18",
+            "updatedAt": "2025-11-20 09:52:49"
+        },
+        {
+            "id": "1",
+            "user": {
+                "id": "3",
+                "username": "zhangsan",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [],
+            "totalAmount": 78.00,
+            "status": "pending",
+            "address": "学生公寓A栋101室",
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
+        },
+        {
+            "id": "2",
+            "user": {
+                "id": "4",
+                "username": "lisi",
+                "name": null,
+                "email": null,
+                "phone": null,
+                "isAdmin": null,
+                "status": null,
+                "createdAt": null,
+                "lastLogin": null
+            },
+            "items": [],
+            "totalAmount": 56.00,
+            "status": "confirmed",
+            "address": "学生公寓B栋203室",
+            "createdAt": "2025-11-18 02:21:15",
+            "updatedAt": "2025-11-18 02:21:15"
         }
-      ],
-      "total": number,
-      "page": number,
-      "pageSize": number
-    }
-  }
-  ```
-
-## 5. 管理员接口
-
-### 5.1 获取管理员信息
-- **URL**: `/admin/info`
-- **方法**: `GET`
-- **描述**: 获取当前管理员的信息和权限
-- **认证**: 需要管理员token
-- **成功响应**:
-  ```json
-  {
+    ],
+    "total": 4,
+    "page": 1,
+    "pageSize": 10
+}
+```
+- `PUT /api/orders/admin/{orderId}/status` - 管理员更新订单状态
+```json
+请求示例
+PUT /api/orders/admin/682ff962-ca64-4878-b118-62dbdba2cc85/status
+{
+    "status": "completed"
+}
+响应示例
+{
     "success": true,
     "data": {
-      "username": "string",
-      "role": "admin",
-      "permissions": ["food:manage", "order:manage", "user:manage", "statistics:view"]
-    }
-  }
-  ```
+        "id": "682ff962-ca64-4878-b118-62dbdba2cc85",
+        "user": {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": null,
+            "email": null,
+            "phone": null,
+            "isAdmin": null,
+            "status": null,
+            "createdAt": null,
+            "lastLogin": null
+        },
+        "items": [
+            {
+                "foodId": "1",
+                "name": "宫保鸡丁更新", 
+                "price": 35.00,
+                "quantity": 2
+            }
+        ],
+        "totalAmount": 70.00,
+        "status": "completed",
+        "address": "学生宿舍A栋101室",
+        "createdAt": "2025-11-18 15:26:18",
+        "updatedAt": "2025-11-20 09:52:49"
+    },
+    "message": "订单状态更新成功"
+}
+```
 
-## 6. 数据字典
+### 用户管理（管理员）
+- `GET /api/users` - 获取所有用户
+```json
+响应示例
+{
+    "items": [
+        {
+            "id": "5830214e-24cc-410b-aa37-927366bc8ede",
+            "username": "admin123",
+            "name": "admin1234",
+            "email": "liuhsin@vip.qq.com",
+            "phone": "12345678901",
+            "isAdmin": true,
+            "status": "active",
+            "createdAt": "2025-11-18 13:46:42",
+            "lastLogin": "2025-11-20 09:47:14"
+        },
+        {
+            "id": "2",
+            "username": "user",
+            "name": "普通用户",
+            "email": "user@campusfood.com",
+            "phone": "13800138001",
+            "isAdmin": false,
+            "status": "active",
+            "createdAt": "2025-11-18 02:21:15",
+            "lastLogin": "2023-12-01 00:00:00"
+        },
+        {
+            "id": "3",
+            "username": "zhangsan",
+            "name": "张三",
+            "email": "zhangsan@campusfood.com",
+            "phone": "13800138002",
+            "isAdmin": false,
+            "status": "active",
+            "createdAt": "2025-11-18 02:21:15",
+            "lastLogin": "2023-12-01 00:00:00"
+        },
+        {
+            "id": "4",
+            "username": "lisi",
+            "name": "李四",
+            "email": "lisi@campusfood.com",
+            "phone": "13800138003",
+            "isAdmin": false,
+            "status": "active",
+            "createdAt": "2025-11-18 02:21:15",
+            "lastLogin": "2023-12-01 00:00:00"
+        },
+        {
+            "id": "5",
+            "username": "wangwu",
+            "name": "王五",
+            "email": "wangwu@campusfood.com",
+            "phone": "13800138004",
+            "isAdmin": false,
+            "status": "active",
+            "createdAt": "2025-11-18 02:21:15",
+            "lastLogin": "2023-12-01 00:00:00"
+        }
+    ],
+    "total": 5,
+    "page": 1,
+    "pageSize": 10
+}
+``` 
+- `PUT /api/users/{userId}/role` - 更新用户角色
+```json
+请求示例
+PUT /api/users/5830214e-24cc-410b-aa37-927366bc8ede/role?role=admin
+响应示例
+{
+    "success": true,
+    "data": null,
+    "message": "角色更新成功"
+}
+```
 
-### 6.1 订单状态
-- `pending`: 待处理
-- `confirmed`: 已确认
-- `preparing`: 准备中
-- `delivered`: 已送达
-- `completed`: 已完成
-- `cancelled`: 已取消
-
-### 6.2 食品状态
-- `available`: 可购买
-- `unavailable`: 不可购买
-
-## 7. 错误码说明
-- `400`: 请求参数错误
-- `401`: 未授权或登录过期
-- `403`: 没有权限执行此操作
-- `404`: 请求的资源不存在
-- `500`: 服务器内部错误
-
-## 8. 安全性考虑
-1. 所有敏感接口都需要进行认证和授权
-2. 密码必须进行加密存储
-3. JWT令牌需要设置合理的过期时间
-4. 防止SQL注入、XSS攻击等常见安全问题
-5. 对API请求进行限流，防止恶意请求
+- `DELETE /api/users/{userId}` - 删除用户
+```json
+请求示例
+DELETE /api/users/5830214e-24cc-410b-aa37-927366bc8ede
+响应示例
+{
+    "success": true,
+    "data": null,
+    "message": "用户删除成功"
+}
+```
