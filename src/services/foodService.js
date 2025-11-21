@@ -22,8 +22,8 @@ export const createFood = async (foodData) => {
 }
 
 // 更新食品
-export const updateFoodStatus = async (id, foodData) => {
-  const response = await api.put(`/foods/${id}`, foodData)
+export const updateFoodStatus = async (id,foodStatus) => {
+  const response = await api.put(`/foods/${id}/available?available=${foodStatus}`)
   return response
 }
 

@@ -198,7 +198,7 @@ export default {
         )
         
         // 更新状态
-        await updateFoodStatus(id, food?.status === 'available' ? 'unavailable' : 'available')
+        await updateFoodStatus(id, food?.status === 'available' ? 'false' : 'true')
         ElMessage.success(`${actionText}成功`)
         fetchFoods() // 重新加载列表
       } catch (error) {
